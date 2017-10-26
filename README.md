@@ -1,16 +1,20 @@
 # GameLab 1 Project Repository
 
-## General Info 
-* Working Title: 
-* Final Title:
-* Participant1 (Name, E-Mail, sNumber): 
-* Participant2 (Name, E-Mail, sNumber): 
-* Participantn (Name, E-Mail, sNumber): 
-* Engine Type:
-* Start-Date: 2/10/2017          
-* Study Program: Games Engineering B.Sc.
+|  General Info  | |
+| ---|---|
+| Working Title |  |
+| Final Title |  |
+| Participant 1 | Name, E-Mail, sNumber |
+| Participant 2 | Name, E-Mail, sNumber |
+| Participant N (if applicable) | Name, E-Mail, sNumber |
+|Engine Type | |
+|Start-Date| 2/10/2017 |
+|Study Program| Games Engineering B.Sc.|
 
 ### Abstract
+
+Describe your Project in a few sentences.
+Be precise.
 
 ## GitLab Informations and Repository Management
 
@@ -27,8 +31,7 @@ As long as you place your files and projects at the correct location, it should 
 
 Read more about git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
 
-The folder *Documentation* contains the report documenting the project.
-A LaTeX template is found inside (*report.tex*) based on the IEEE Transactions style along with an appropriate *.gitignore* file.
+The folder *Documentation* contains the report documenting the project. 
 
 ### LaTeX Further Reading
 - [Beginners Tutorial](https://www.dante.de/tex/TeXAnfaenger.html)
