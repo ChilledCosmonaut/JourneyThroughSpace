@@ -1,5 +1,7 @@
 # GameLab 1 Project Repository
 
+Please edit this README to fit your project.
+
 |  General Info  | |
 | ---|---|
 | Working Title |  |
