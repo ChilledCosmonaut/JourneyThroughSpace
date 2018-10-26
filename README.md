@@ -18,11 +18,10 @@
 `Describe your Project in a few sentences.
 Be precise.`
 
-`--- REPLACE WITH CUSTOM CONTENT BELOW HERE ---`
+`--- 8< --- REPLACE WITH CUSTOM CONTENT BELOW HERE --- 8< ---`
 
-## GitLab Informations and Repository Management
+## Repository Usage Guides
 
-This is a skeleton repository for a GameLab Project including documentation.
 
 ```
 RepositoryRoot/
@@ -47,7 +46,6 @@ RepositoryRoot/
 - *report* should contain the latex sources and the PDF of your report.
 - *trailer* should contain all final versions of the trailers you created.
 
-Read more about Git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
 
 ### LaTeX Further Reading
 - [Beginners Tutorial](https://www.dante.de/tex/TeXAnfaenger.html)
@@ -55,6 +53,8 @@ Read more about Git in the [Atlassian Git Tutorials](https://de.atlassian.com/gi
 - [LaTeX for Mac](http://www.tug.org/mactex/)
 
 ### Project and Source Control
+
+Read more about Git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
 
 #### Avoiding Clutter with .gitignore
 Gitignore files allow to exclude certain patterns from being versioned.
