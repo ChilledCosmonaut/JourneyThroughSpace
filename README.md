@@ -1,6 +1,6 @@
 # GameLab Project Repository
 
-**Please edit this README to fit your project.**
+`Please edit this README to fit your project.`
 
 |  General Info  | |
 | ---|---|
@@ -9,33 +9,45 @@
 | Participant 1 | Name, E-Mail, sNumber |
 | Participant 2 | Name, E-Mail, sNumber |
 | Participant N (if applicable) | Name, E-Mail, sNumber |
-|Engine (incl. version) | |
-|Start-Date| 2/10/2017 |
-|Study Program| Games Engineering B.Sc.|
+|Engine (version) | Unity 20XX.X.XfX / Unreal 4.2X.X |
+|Start-Date| XX.XX.20XX |
+|Study Program | Games Engineering B.Sc.|
 
 ### Abstract
 
-**Describe your Project in a few sentences.
-Be precise.**
+`Describe your Project in a few sentences.
+Be precise.`
 
---- **REPLACE WITH CUSTOM CONTENT BELOW HERE** ---
+`--- REPLACE WITH CUSTOM CONTENT BELOW HERE ---`
 
 ## GitLab Informations and Repository Management
 
-This is a skeleton repository for a GameLab 1 Project including documentation.
-It contains two main folders:
+This is a skeleton repository for a GameLab Project including documentation.
 
-- Code
-- Documentation
+```
+RepositoryRoot/
+    ├── README.md
+    ├── binaries
+    ├── code
+    │   ├── MyExampleProject
+    │   ├── MyGame
+    │   └── MyPlugin
+    ├── documentation
+    ├── poster
+    ├── report
+    └── trailer
+```
 
-The folder *Code* will house the actual game project.
-The repository is already configured so that Unreal or Unity projects placed below `Code`, i.e. `Code/MyUnrealProjectFolder` or `Code/MyUnityProjectFolder` will be correctly handled by Git.
-This includes using GitLFS for large binary files and ignoring redundant data to keep the repository small.
-As long as you place your files and projects at the correct location, it should work out-of-the-box.
+- *README.md* contains this information. Update it to reflect information about your project.
+- *binaries* will house your final, compiled, ready-to-execute application.
+    You will likely not use this until towards the end of your project.
+- *code* should contain the project folder(s) (e.g. *MyGame*, *MyPlugin*) and, if required, a tutorial project (*MyExampleProject*). Do not forget the correct *.gitignore* and *.gitattributes*, where necessary.
+- *documentation* contains a tutorial or further documentation of the project. 
+- *poster* should contain the final versions of the posters you created.
+- *report* should contain the latex sources and the PDF of your report.
+- *trailer* should contain all final versions of the trailers you created.
 
-Read more about git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
-
-The folder *Documentation* contains the report documenting the project. 
+Read more about Git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
 
 ### LaTeX Further Reading
 - [Beginners Tutorial](https://www.dante.de/tex/TeXAnfaenger.html)
@@ -60,12 +72,10 @@ Your *.gitignore* is not correctly set up, if
 In this case, check your setup.
 Be aware that *.gitignore* is the actual, required filename!
 
-
 #### Versioning Binary Assets with Git LFS and .gitattributes
 Gitattribute files define file types to be handled through the Git Large File Storage (Git LFS) System.
-Git, in a nutshell, calculates differences between two versions of a file based on line-wise comparisons.
-This system is not meant to (and does not handle well) binary files, such as assets, images, meshes, etc.
-Even minimal changes might add the whole size of the file to the projects history.
+This system does not handle binary files, such as assets, images, meshes, etc. well.
+Even minimal changes add the whole file to the projects history.
 Git LFS identifies iterations of binary files using a hash in the repository, but stores the actual binary data transparently in a seperate data silo.
 
 To let Git LFS track a certain file (e.g. recursively all *.jpg*), execute this command:
@@ -76,12 +86,11 @@ This command creates the following entry in the *.gitattributes* file:
 
 	*.jpg filter=lfs diff=lfs merge=lfs -text
 
-
 Git LFS is installed on all Workstations in E37 and the GameLabs.
 For your private computer, you can [download Git LFS here](https://git-lfs.github.com/).
-
 
 #### Further Reading: 
 * [Epic on Git for Unreal](https://wiki.unrealengine.com/Git_source_control_(Tutorial)#Workarounds_for_dealing_with_binary_files_on_your_Git_repository)
 * [GitLFS](https://www.git-lfs.com)
 * [Git](https://www.git-scm.com)
+
