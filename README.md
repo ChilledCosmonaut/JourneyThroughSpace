@@ -28,9 +28,9 @@ RepositoryRoot/
     ├── README.md
     ├── binaries
     ├── code
-    │   ├── MyExampleProject
-    │   ├── MyGame
-    │   └── MyPlugin
+    │   ├── *MyGameProject*  // Place your project folder(s) here
+    │   ├── *MyPluginProject*
+    │   └── *...*
     ├── documentation
     ├── poster
     ├── report
