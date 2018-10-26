@@ -1,6 +1,6 @@
-# GameLab 1 Project Repository
+# GameLab Project Repository
 
-Please edit this README to fit your project.
+**Please edit this README to fit your project.**
 
 |  General Info  | |
 | ---|---|
@@ -9,14 +9,16 @@ Please edit this README to fit your project.
 | Participant 1 | Name, E-Mail, sNumber |
 | Participant 2 | Name, E-Mail, sNumber |
 | Participant N (if applicable) | Name, E-Mail, sNumber |
-|Engine Type | |
+|Engine (incl. version) | |
 |Start-Date| 2/10/2017 |
 |Study Program| Games Engineering B.Sc.|
 
 ### Abstract
 
-Describe your Project in a few sentences.
-Be precise.
+**Describe your Project in a few sentences.
+Be precise.**
+
+--- **REPLACE WITH CUSTOM CONTENT BELOW HERE** ---
 
 ## GitLab Informations and Repository Management
 
