@@ -9,6 +9,5 @@
 *.Trashes
 *.ehthumbs.db
 *Thumbs.db
-
-# Vim
+~$*.ppt*
 *.swp
