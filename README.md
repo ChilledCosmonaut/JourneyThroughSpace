@@ -1,6 +1,6 @@
 # GameLab Project Repository
 
-`Please edit this README to fit your project.`
+`Please edit this README to fit your project and keep it up-to-date with your concept paper, slides, and report.`
 
 |  General Info  | |
 | ---|---|
@@ -15,42 +15,31 @@
 
 ### Abstract
 
-`Describe your Project in a few sentences.
-Be precise.`
 
 `--- 8< --- REPLACE WITH CUSTOM CONTENT BELOW HERE --- 8< ---`
 
 ## Repository Usage Guides
 
-
 ```
 RepositoryRoot/
-    ├── README.md
-    ├── binaries
+    ├── README.md            // This should reflect your project 
+    │                        //  accurately, so always merge infor- 
+    │                        //  mation from your concept paper 
+    │                        //  with the readme
+    ├── binaries             // Archives (.zip) of your executable projects
+    │                        //  including (non-standard) dependencies
     ├── code
-    │   ├── *MyGameProject*  // Place your project folder(s) here
-    │   ├── *MyPluginProject*
-    │   └── *...*
-    ├── documentation
-    ├── poster
-    ├── report
-    └── trailer
+    │   ├── MyGameProject    // Place your project folder(s) here
+    │   ├── MyPluginProject  // No un-used folders, no "archived" folders
+    │   └── ...
+    ├── documentation       // GL2/3 - Each project requires FULL documentation  
+    │                       //   i.e. API Docs, Handbook, Dev Docs
+    ├── slides              // Upload each and every presentation
+    │                       //   you give here as well
+    ├── poster              // PDF of your Poster(s)
+    ├── report              // PDF + Latex Sources of your report
+    └── trailer             // .mp4 (final trailer, no raw material)
 ```
-
-- *README.md* contains this information. Update it to reflect information about your project.
-- *binaries* will house your final, compiled, ready-to-execute application.
-    You will likely not use this until towards the end of your project.
-- *code* should contain the project folder(s) (e.g. *MyGame*, *MyPlugin*) and, if required, a tutorial project (*MyExampleProject*). Do not forget the correct *.gitignore* and *.gitattributes*, where necessary.
-- *documentation* contains a tutorial or further documentation of the project. 
-- *poster* should contain the final versions of the posters you created.
-- *report* should contain the latex sources and the PDF of your report.
-- *trailer* should contain all final versions of the trailers you created.
-
-
-### LaTeX Further Reading
-- [Beginners Tutorial](https://www.dante.de/tex/TeXAnfaenger.html)
-- [LaTeX for Windows](https://www.miktex.org)
-- [LaTeX for Mac](http://www.tug.org/mactex/)
 
 ### Project and Source Control
 
