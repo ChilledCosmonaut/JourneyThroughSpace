@@ -1,6 +1,6 @@
-# GameLab Project Repository
-
 `Please edit this README to fit your project and keep it up-to-date with your concept paper, slides, and report.`
+
+# GameLab Project Repository
 
 |  General Info  | |
 | ---|---|
@@ -13,7 +13,9 @@
 
 ### Abstract
 
-`--- 8< --- REPLACE WITH CUSTOM CONTENT BELOW HERE --- 8< ---`
+`Insert your project description here, and keep it up-to-date.`
+
+`--- 8< --- READ, THEN REPLACE WITH CUSTOM CONTENT BELOW HERE --- 8< ---`
 
 ## Repository Usage Guides
 
