@@ -4,17 +4,14 @@
 
 |  General Info  | |
 | ---|---|
-| Working Title |  |
-| Final Title |  |
-| Participant 1 | Name, E-Mail, sNumber |
-| Participant 2 | Name, E-Mail, sNumber |
-| Participant N (if applicable) | Name, E-Mail, sNumber |
-|Engine (version) | Unity 20XX.X.XfX / Unreal 4.2X.X |
-|Start-Date| XX.XX.20XX |
-|Study Program | Games Engineering B.Sc.|
+| Working Title | `Edit me!` |
+| Final Title | `Edit me!` |
+| Student | `Name`, `edit-me`@stud-mail.uni-wuerzburg.de, `s######` |
+| Target Platform(s) | `Edit me!` |
+| Start Date | 21.10.2019 |
+| Study Program | Games Engineering B.Sc.|
 
 ### Abstract
-
 
 `--- 8< --- REPLACE WITH CUSTOM CONTENT BELOW HERE --- 8< ---`
 
@@ -26,19 +23,20 @@ RepositoryRoot/
     │                        //  accurately, so always merge infor- 
     │                        //  mation from your concept paper 
     │                        //  with the readme
-    ├── binaries             // Archives (.zip) of your executable projects
+    ├── binaries/            // Archives (.zip) of your executable projects
     │                        //  including (non-standard) dependencies
-    ├── code
-    │   ├── MyGameProject    // Place your project folder(s) here
-    │   ├── MyPluginProject  // No un-used folders, no "archived" folders
+    ├── code/
+    │   ├── engine/         // Place your project folder(s) here
+    │   ├── my-game-1/      // No un-used folders, no "archived" folders
+    │   ├── CMakeLists.txt  // e.g. if using CMake, this can be your project root
     │   └── ...
-    ├── documentation       // GL2/3 - Each project requires FULL documentation  
+    ├── documentation/      // GL2/3 - Each project requires FULL documentation  
     │                       //   i.e. API Docs, Handbook, Dev Docs
-    ├── slides              // Upload each and every presentation
+    ├── slides/             // Upload each and every presentation
     │                       //   you give here as well
-    ├── poster              // PDF of your Poster(s)
-    ├── report              // PDF + Latex Sources of your report
-    └── trailer             // .mp4 (final trailer, no raw material)
+    ├── poster/             // PDF of your Poster(s)
+    ├── report/             // PDF + Latex Sources of your report
+    └── trailer/            // .mp4 (final trailer, no raw material)
 ```
 
 ### Project and Source Control
