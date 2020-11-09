@@ -1,4 +1,6 @@
-`Please edit this README to fit your project and keep it up-to-date with your concept paper, slides, and report.`
+`Please edit this README to fit your project and keep it up-to-date with your concept.`
+
+`All final deliverables (code, executable game, report, trailer and poster) have to be committed, tagged as final and pushed to your GitLab repository.`
 
 # GameLab Project Repository
 
@@ -21,12 +23,12 @@
 
 ```
 RepositoryRoot/
-    ├── README.md            // This should reflect your project 
-    │                        //  accurately, so always merge infor- 
-    │                        //  mation from your concept paper 
-    │                        //  with the readme
-    ├── binaries/            // Archives (.zip) of your executable projects
-    │                        //  including (non-standard) dependencies
+    ├── README.md           // This should reflect your project 
+    │                       //  accurately, so always merge infor- 
+    │                       //  mation from your concept paper 
+    │                       //  with the readme
+    ├── builds/             // Archives (.zip) of built executables of your projects
+    │                       //  including (non-standard) dependencies
     ├── code/
     │   ├── engine/         // Place your project folder(s) here
     │   ├── my-game-1/      // No un-used folders, no "archived" folders
@@ -34,10 +36,8 @@ RepositoryRoot/
     │   └── ...
     ├── documentation/      // GL2/3 - Each project requires FULL documentation  
     │                       //   i.e. API Docs, Handbook, Dev Docs
-    ├── slides/             // Upload each and every presentation
-    │                       //   you give here as well
     ├── poster/             // PDF of your Poster(s)
-    ├── report/             // PDF + Latex Sources of your report
+    ├── report/             // PDF
     └── trailer/            // .mp4 (final trailer, no raw material)
 ```
 
