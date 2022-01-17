@@ -15,6 +15,6 @@ A Journey through Space is a Space-shooter game written in C++ that allows the P
 
 This gives the Player more variable approaches on how to turn the tide in battle! Is a more defense strategy necessary or can a trap be set up, in which the enemies step?
 
-Furthermore the game is programmed for Windows by utilizing OpenGL and other supporting libraries.
+Furthermore, the game is programmed for Windows by utilizing OpenGL and other supporting libraries.
 
 
