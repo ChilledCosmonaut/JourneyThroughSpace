@@ -3,9 +3,32 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
+
+// process user input
+float zRotation = 0.0f;
+float rotSpeed  = 120.0f;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void processUserInput(GLFWwindow *window){
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    // user input
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        std::cout << "zRotation: " << zRotation << std::endl;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        std::cout << "zRotation: " << zRotation << std::endl;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        // add your own input here
+    }
 }
 
 int main() {
@@ -35,10 +58,13 @@ int main() {
 
     while(!glfwWindowShouldClose(window))
     {
-        glfwSwapBuffers(window);
-        glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        processUserInput(window);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();
