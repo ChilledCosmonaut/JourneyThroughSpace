@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(SOURCE_FILES src/main.cpp )
+set(SOURCE_FILES src/main.cpp src/shader.cpp src/shader.h)
 
 set(EXE_FILE Game)
 
