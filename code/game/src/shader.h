@@ -32,8 +32,8 @@ namespace gl3{
 
         void use() const;
 
-        void setVector(const std::string &uniform, glm::mat4 matrix) const;
-        void setMatrix(const std::string &uniform, glm::vec4 vector) const;
+        void setVector(const std::string &uniform, glm::vec4 matrix) const;
+        void setMatrix(const std::string &uniform, glm::mat4 vector) const;
 
         ~shader();
 
