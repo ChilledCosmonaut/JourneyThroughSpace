@@ -20,9 +20,6 @@ namespace gl3{
     public:
         shader(const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset);
 
-        // delete copy constructor
-        shader(const shader &shader) = delete;
-
         // explicit move constructor
         shader(shader &&other) noexcept {
             std::swap(this->shaderProgram, other.shaderProgram);
@@ -32,8 +29,8 @@ namespace gl3{
 
         void use() const;
 
-        void setVector(const std::string &uniform, glm::vec4 matrix) const;
-        void setMatrix(const std::string &uniform, glm::mat4 vector) const;
+        void setVector(const std::string &uniform, glm::vec4 vector) const;
+        void setMatrix(const std::string &uniform, glm::mat4 matrix) const;
 
         ~shader();
 
@@ -41,5 +38,6 @@ namespace gl3{
         unsigned int shaderProgram = 0;
         unsigned int vertexShader = 0;
         unsigned int fragmentShader = 0;
+        std::filesystem::path assetPath;
     };
 }

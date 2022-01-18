@@ -2,6 +2,9 @@
 #include <stdexcept>
 #include "shader.h"
 
+#define _AS_STRING(x) #x
+#define AS_STRING(x) _AS_STRING(x)
+
 
 namespace gl3{
 
@@ -46,10 +49,16 @@ namespace gl3{
     }
 
     shader::shader(const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
+        assetPath = AS_STRING(DEBUG_ASSET_ROOT) / std::filesystem::path("assets");
+
+        assetPath = std::filesystem::canonical(assetPath).make_preferred();
+
+        auto canonicalVertexShaderAsset = std::filesystem::canonical((assetPath / vertexShaderAsset).make_preferred());
+        auto canonicalFragmentShaderAsset = std::filesystem::canonical((assetPath / fragmentShaderAsset).make_preferred());
 
         // Load and compile shader
-        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderAsset);
-        fragmentShader = loadAndCompileShader(GL_VERTEX_SHADER, fragmentShaderAsset);
+        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalVertexShaderAsset);
+        fragmentShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalFragmentShaderAsset);
 
         // Create a shader program, attach the shaders and link program
         shaderProgram = glCreateProgram();
@@ -76,14 +85,14 @@ namespace gl3{
         glUseProgram(shaderProgram);
     }
 
-    void shader::setVector(const std::string &uniform, glm::vec4 matrix) const {
-        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, uniform.c_str());
-        glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
-    }
-
-    void shader::setMatrix(const std::string &uniform, glm::mat4 vector) const {
+    void shader::setVector(const std::string &uniform, glm::vec4 vector) const {
         unsigned int uniformLocation = glGetUniformLocation(shaderProgram, uniform.c_str());
         glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(vector));
+    }
+
+    void shader::setMatrix(const std::string &uniform, glm::mat4 matrix) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, uniform.c_str());
+        glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
     shader::~shader() {
