@@ -55,6 +55,7 @@
 .idea/**/shelf
 workspace.xml
 code.iml
+code2.iml
 
 # AWS User-specific
 .idea/**/aws.xml
