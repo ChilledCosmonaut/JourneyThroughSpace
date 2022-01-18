@@ -10,16 +10,16 @@ namespace files{
 
     class FileManager {
     public:
-        const char* getAssetFileFrom(const fs::path &relativeFilePath);
-        void writeFileToTemp(const char* stringToSave, const fs::path &fileName);
-        void saveFileAt(const char* stringToSave, const fs::path &relativeFilePath);
+        static const char* getAssetFileFrom(const fs::path &relativeFilePath);
+        static void writeFileToTemp(const char* stringToSave, const fs::path &fileName);
+        static void saveFileAt(const char* stringToSave, const fs::path &relativeFilePath);
 
     private:
 
        [[nodiscard]] fs::path static resolveForSubdirectory(const fs::path &relativeAssetPath, const fs::path &subdirectory) {
-           return fs::canonical((subdirectory / relativeAssetPath).make_preferred());
+           return fs::weakly_canonical((subdirectory / relativeAssetPath).make_preferred());
        }
-       std::string readText(const std::filesystem::path &fileName);
-       void saveTextAt(const char* stringToSave, const std::filesystem::path &fileName);
+       static std::string readText(const std::filesystem::path &fileName);
+       static void saveTextAt(const char* stringToSave, const std::filesystem::path &fileName);
     };
 }
