@@ -10,7 +10,7 @@ namespace files{
 
     class FileManager {
     public:
-        static const char* getAssetFileFrom(const fs::path &relativeFilePath);
+        static std::string getAssetFileFrom(const fs::path &relativeFilePath);
         static void writeFileToTemp(const char* stringToSave, const fs::path &fileName);
         static void saveFileAt(const char* stringToSave, const fs::path &relativeFilePath);
 
