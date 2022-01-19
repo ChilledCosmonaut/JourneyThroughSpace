@@ -1,5 +1,4 @@
 
-#include <iostream>
 #include "FileManager.h"
 
 namespace files{
@@ -10,9 +9,7 @@ namespace files{
     }
 
     void files::FileManager::writeFileToTemp(const char *stringToSave, const std::filesystem::path &fileName) {
-        std::cout << "Before resolve" << std::endl;
         fs::path tempFilePath = resolveForSubdirectory(fileName, std::filesystem::temp_directory_path());
-        std::cout << "After resolve" << std::endl;
         saveTextAt(stringToSave, tempFilePath);
     }
 
@@ -33,6 +30,16 @@ namespace files{
         std::ofstream sourceFile(fileName);
         sourceFile << sourceFile.rdbuf();
         sourceFile.close();
+    }
+
+    const aiScene* FileManager::loadModelFromFile(const fs::path &relativeFilePath) {
+        Assimp::Importer importer;
+        const aiScene *modelScene = importer.ReadFile(relativeFilePath.string(), aiProcess_Triangulate | aiProcess_FlipUVs);
+
+        if(!modelScene || modelScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !modelScene->mRootNode) {
+            throw std::runtime_error("ERROR::ASSIMP::" + std::string(importer.GetErrorString()));
+        }
+        return modelScene;
     }
 }
 

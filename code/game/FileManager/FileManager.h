@@ -5,6 +5,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 namespace files{
     namespace fs = std::filesystem;
 
@@ -13,6 +17,7 @@ namespace files{
         static std::string getAssetFileFrom(const fs::path &relativeFilePath);
         static void writeFileToTemp(const char* stringToSave, const fs::path &fileName);
         static void saveFileAt(const char* stringToSave, const fs::path &relativeFilePath);
+        static const aiScene* loadModelFromFile(const fs::path &relativeFilePath);
 
     private:
 
