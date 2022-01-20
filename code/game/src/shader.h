@@ -39,6 +39,5 @@ namespace gl3{
         unsigned int shaderProgram = 0;
         unsigned int vertexShader = 0;
         unsigned int fragmentShader = 0;
-        std::filesystem::path assetPath;
     };
 }

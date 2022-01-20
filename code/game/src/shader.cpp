@@ -41,12 +41,9 @@ namespace gl3{
 
     shader::shader(const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
 
-        auto canonicalVertexShaderAsset = std::filesystem::canonical((assetPath / vertexShaderAsset).make_preferred());
-        auto canonicalFragmentShaderAsset = std::filesystem::canonical((assetPath / fragmentShaderAsset).make_preferred());
-
         // Load and compile shader
-        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalVertexShaderAsset);
-        fragmentShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalFragmentShaderAsset);
+        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderAsset);
+        fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderAsset);
 
         // Create a shader program, attach the shaders and link program
         shaderProgram = glCreateProgram();
