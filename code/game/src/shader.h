@@ -9,10 +9,8 @@
 
 #include <filesystem>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <filesystem>
+
+#include "../FileManager/FileManager.h"
 
 
 namespace gl3{
