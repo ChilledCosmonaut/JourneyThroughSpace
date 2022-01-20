@@ -2,7 +2,6 @@
 #pragma once
 
 #include "shader.h"
-#include "../FileManager/FileManager.h"
 
 
 namespace gl3{
@@ -68,6 +67,8 @@ namespace gl3{
         // Detach the shaders
         glDetachShader(shaderProgram, vertexShader);
         glDetachShader(shaderProgram, fragmentShader);
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
     }
 
     void shader::use() const {
@@ -87,5 +88,20 @@ namespace gl3{
     shader::~shader() {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+    }
+
+    void shader::setBool(const std::string &name, bool value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1i(uniformLocation, (int) value);
+    }
+
+    void shader::setInt(const std::string &name, int value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1i(uniformLocation, (int) value);
+    }
+
+    void shader::setFloat(const std::string &name, float value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1f(uniformLocation, value);
     }
 }

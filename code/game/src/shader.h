@@ -29,6 +29,9 @@ namespace gl3{
 
         void setVector(const std::string &uniform, glm::vec4 vector) const;
         void setMatrix(const std::string &uniform, glm::mat4 matrix) const;
+        void setBool(const std::string &name, bool value) const;
+        void setInt(const std::string &name, int value) const;
+        void setFloat(const std::string &name, float value) const;
 
         ~shader();
 
