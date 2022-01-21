@@ -145,32 +145,6 @@ int main() {
         std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
     }
 
-    // SHader Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vShader);
-    glAttachShader(shaderProgram, fShader);
-    glLinkProgram(shaderProgram);
-
-    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::PROGRAM::LINKING_FAILED" << infoLog << std::endl;
-    }
-
-    // SHader Program
-    unsigned int shaderProgram2;
-    shaderProgram2 = glCreateProgram();
-    glAttachShader(shaderProgram2, vShader);
-    glAttachShader(shaderProgram2, fShader2);
-    glLinkProgram(shaderProgram2);
-
-    glGetShaderiv(shaderProgram2, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetProgramInfoLog(shaderProgram2, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::PROGRAM::LINKING_FAILED" << infoLog << std::endl;
-    }
-
     gl3::shader shader = gl3::shader("shaders/vertexShader.glsl","shaders/fragmentShader.glsl");
     shader.use();
 
@@ -242,8 +216,6 @@ int main() {
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
-    glDeleteProgram(shaderProgram2);
 
     glfwTerminate();
     return 0;
