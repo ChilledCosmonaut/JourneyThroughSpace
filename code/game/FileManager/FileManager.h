@@ -9,8 +9,17 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "stb_image.h"
+
 namespace files{
     namespace fs = std::filesystem;
+
+    struct texture{
+        int width,
+                height,
+                colChannel;
+        unsigned char *content;
+    };
 
     class FileManager {
     public:
@@ -18,6 +27,7 @@ namespace files{
         static void writeFileToTemp(const char* stringToSave, const fs::path &fileName);
         static void saveFileAt(const char* stringToSave, const fs::path &relativeFilePath);
         static const aiScene* loadModelFromFile(const fs::path &relativeFilePath);
+        static texture loadTextureFromFile(const fs::path &relativeFilePath);
 
     private:
 

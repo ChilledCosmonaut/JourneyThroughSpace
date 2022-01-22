@@ -1,9 +1,7 @@
 
-#include <stdexcept>
-#include "shader.h"
+#pragma once
 
-#define _AS_STRING(x) #x
-#define AS_STRING(x) _AS_STRING(x)
+#include "shader.h"
 
 
 namespace gl3{
@@ -14,18 +12,11 @@ namespace gl3{
         char infoLog[GL_INFO_LOG_LENGTH];
     };
 
-    std::string readText(const std::filesystem::path &fileName) {
-        std::ifstream sourceFile(fileName);
-        std::stringstream buffer;
-        buffer << sourceFile.rdbuf();
-        return buffer.str();
-    }
-
     unsigned int loadAndCompileShader(GLuint shaderType, const std::filesystem::path &shaderAssetPath){
 
-        auto shaderAsset = readText(shaderAssetPath);
+        auto shaderAsset = files::FileManager::getAssetFileFrom(shaderAssetPath);
         const char* shaderSource = shaderAsset.c_str();
-        unsigned int shader = glCreateShader(GL_VERTEX_SHADER);
+        unsigned int shader = glCreateShader(shaderType);
 
         glShaderSource(shader, 1, &shaderSource, nullptr);
         glCompileShader(shader);
@@ -45,20 +36,14 @@ namespace gl3{
             }
         }
 
-        return  shader;
+        return shader;
     }
 
     shader::shader(const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
-        assetPath = AS_STRING(DEBUG_ASSET_ROOT) / std::filesystem::path("assets");
-
-        assetPath = std::filesystem::canonical(assetPath).make_preferred();
-
-        auto canonicalVertexShaderAsset = std::filesystem::canonical((assetPath / vertexShaderAsset).make_preferred());
-        auto canonicalFragmentShaderAsset = std::filesystem::canonical((assetPath / fragmentShaderAsset).make_preferred());
 
         // Load and compile shader
-        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalVertexShaderAsset);
-        fragmentShader = loadAndCompileShader(GL_VERTEX_SHADER, canonicalFragmentShaderAsset);
+        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderAsset);
+        fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderAsset);
 
         // Create a shader program, attach the shaders and link program
         shaderProgram = glCreateProgram();
@@ -79,6 +64,8 @@ namespace gl3{
         // Detach the shaders
         glDetachShader(shaderProgram, vertexShader);
         glDetachShader(shaderProgram, fragmentShader);
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
     }
 
     void shader::use() const {
@@ -98,5 +85,20 @@ namespace gl3{
     shader::~shader() {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+    }
+
+    void shader::setBool(const std::string &name, bool value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1i(uniformLocation, (int) value);
+    }
+
+    void shader::setInt(const std::string &name, int value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1i(uniformLocation, (int) value);
+    }
+
+    void shader::setFloat(const std::string &name, float value) const {
+        unsigned int uniformLocation = glGetUniformLocation(shaderProgram, name.c_str());
+        glUniform1f(uniformLocation, value);
     }
 }

@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.h"
+#include "../FileManager/stb_image.h"
 
 
 double deltaTime;
@@ -18,25 +19,38 @@ float transStep = 1.0f;
 
 const char* vShaderSource = "#version 460 core\n"
                             "layout (location = 0) in vec3 aPos;\n"
+                            "layout (location = 1) in vec3 aColor;\n"
                             "uniform mat4 model;\n"
                             "uniform mat4 view;\n"
                             "uniform mat4 projection;\n"
+                            "out vec3 ourColor;\n"
                             "void main()\n"
                             "{\n"
+                            "    ourColor = aColor;\n"
                             "    gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
                             "}\n";
 
 const char* fShaderSource = "#version 460 core\n"
                             "out vec4 fragColor;\n"
+                            "in vec3 ourColor;\n"
                             "void main()\n"
                             "{\n"
-                            "   fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+                            "   fragColor = vec4(ourColor, 1.0f);\n"
+                            "}\n";
+
+const char* fShaderSource2 = "#version 460 core\n"
+                            "out vec4 fragColor;\n"
+                            "uniform vec4 color;\n"
+                             "in vec3 ourColor;\n"
+                            "void main()\n"
+                            "{\n"
+                            "   fragColor = color;\n"
                             "}\n";
 
 
-void modelTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
-void viewTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
-void projectionTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
+void modelTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+void viewTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+void projectionTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -120,49 +134,111 @@ int main() {
         std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
     }
 
-    // SHader Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vShader);
-    glAttachShader(shaderProgram, fShader);
-    glLinkProgram(shaderProgram);
+    // Fragment Shader
+    unsigned int fShader2;
+    fShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fShader2, 1, &fShaderSource2, nullptr);
+    glCompileShader(fShader2);
 
-    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(fShader2, GL_COMPILE_STATUS, &success);
     if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::PROGRAM::LINKING_FAILED" << infoLog << std::endl;
+        glGetShaderInfoLog(fShader2, 512, nullptr, infoLog);
+        std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
     }
 
-    glUseProgram(shaderProgram);
-
-    /*gl3::shader shaderProgram = gl3::shader("shaders/vertexShader.glsl","shaders/fragmentShader.glsl");
-    shaderProgram.use();*/
+    gl3::shader shader = gl3::shader("shaders/vertexShader.glsl","shaders/fragmentShader.glsl");
+    shader.use();
 
     // Space Ship vertices
     float vertices[] = {
-            0.5f, 0.025f, 0.0f,
-            0.0f, 0.3f, 0.0f,
-            -0.2f, 0.05f, 0.0f,
+            // positions          // colors           // texture1 coords
+            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+    };
 
-            0.5f, -0.025f, 0.0f,
-            0.0f, -0.3f, 0.0f,
-            -0.2f, -0.05f, 0.0f,
+    unsigned int indices[] = {  // note that we start from 0!
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
     };
 
 
 
+    //Element Buffer Object
+    unsigned int ;
+
+    files::texture textureInfoWall = files::FileManager::loadTextureFromFile("wall.jpg");
+    files::texture textureInfoFace = files::FileManager::loadTextureFromFile("awesomeface.png");
+
     //Vertex Buffer Object
-    unsigned int VBO;
+    unsigned int VBO,VAO,EBO;
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //Vertex Attribute Object
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    unsigned int texture1,texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    // set the texture1 wrapping/filtering options (on the currently bound texture1 object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if(textureInfoWall.content){
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureInfoWall.width, textureInfoWall.height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, textureInfoWall.content);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout << "Failed to load texture1" << std::endl;
+    }
+    stbi_image_free(textureInfoWall.content);
+
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    // set the texture1 wrapping/filtering options (on the currently bound texture1 object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if(textureInfoFace.content){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureInfoFace.width, textureInfoFace.height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, textureInfoFace.content);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout << "Failed to load texture1" << std::endl;
+    }
+    stbi_image_free(textureInfoFace.content);
+    // color attribute
+
+    shader.setInt("texture1",0);
+    shader.setInt("texture2",1);
+
+
+    //Element Buffer Object
+    /*unsigned int EBO;
+    glGenBuffers(1, &EBO);*/
+
+
+    /*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+
 
     glfwSetTime(1.0/60);
 
@@ -173,11 +249,25 @@ int main() {
 
         processUserInput(window);
 
-        modelTransform(shaderProgram);
-        viewTransform(shaderProgram);
-        projectionTransform(shaderProgram);
+        shader.setMatrix("model",trans);
+        //modelTransform(&shader);
+        viewTransform(&shader);
+        projectionTransform(&shader);
+        shader.setFloat("mixingFactor", xTranslate);
 
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        try {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture1);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, texture2);
+        }catch (std::exception exception){
+            std::cout << exception.what() << std::endl;
+        }
+
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         // update deltaTime
         deltaTime = glfwGetTime();
@@ -187,24 +277,27 @@ int main() {
         glfwPollEvents();
     }
 
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+
     glfwTerminate();
     return 0;
 }
 
-void modelTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void modelTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(xTranslate, yTranslate, 0.0f));
     model = glm::rotate(model, glm::radians(zRotation), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
 
-    //shaderProgram->setMatrix("model", model);
+    shaderProgram->setMatrix("model", model);
 
-    int modelLocation = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+    /*int modelLocation = glGetUniformLocation(shaderProgram, "model");
+    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));*/
 }
 
-void viewTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void viewTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
     glm::mat4 view;
     view = glm::lookAt(glm::vec3(0.0f,0.0f,25.0f),
@@ -213,19 +306,18 @@ void viewTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
                        glm::vec3(0.0f,0.0f,-1.0f),
                        glm::vec3(0.0f,1.0f,0.0f));*/
 
-    //shaderProgram->setMatrix("view",view);
+    shaderProgram->setMatrix("view",view);
 
-    int viewLocation = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+    /*int viewLocation = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));*/
 }
 
-void projectionTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void projectionTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
     glm::mat4 projection = glm::perspective(glm::radians(15.0f), W_WIDTH/W_HEIGHT, 0.1f, 100.0f);
 
-    //shaderProgram->setMatrix("projection", projection);
+    shaderProgram->setMatrix("projection", projection);
 
-    int projectionLocation = glGetUniformLocation(shaderProgram, "projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+    /*int projectionLocation = glGetUniformLocation(shaderProgram, "projection");
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));*/
 }
-

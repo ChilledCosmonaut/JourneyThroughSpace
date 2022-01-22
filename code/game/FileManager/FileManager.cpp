@@ -41,5 +41,13 @@ namespace files{
         }
         return modelScene;
     }
+
+    texture FileManager::loadTextureFromFile(const fs::path &relativeFilePath) {
+        texture textureFile{};
+        std::string stringFilePath = resolveForSubdirectory(relativeFilePath, "../../assets/textures").string();
+        const char* filePath = stringFilePath.c_str();
+        textureFile.content = stbi_load(filePath, &textureFile.width, &textureFile.height, &textureFile.colChannel, 0);
+        return textureFile;
+    }
 }
 

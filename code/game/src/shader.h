@@ -9,10 +9,8 @@
 
 #include <filesystem>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <filesystem>
+
+#include "../FileManager/FileManager.h"
 
 
 namespace gl3{
@@ -31,6 +29,9 @@ namespace gl3{
 
         void setVector(const std::string &uniform, glm::vec4 vector) const;
         void setMatrix(const std::string &uniform, glm::mat4 matrix) const;
+        void setBool(const std::string &name, bool value) const;
+        void setInt(const std::string &name, int value) const;
+        void setFloat(const std::string &name, float value) const;
 
         ~shader();
 
@@ -38,6 +39,5 @@ namespace gl3{
         unsigned int shaderProgram = 0;
         unsigned int vertexShader = 0;
         unsigned int fragmentShader = 0;
-        std::filesystem::path assetPath;
     };
 }
