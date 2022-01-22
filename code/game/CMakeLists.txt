@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(SOURCE_FILES src/main.cpp src/shader.cpp src/shader.h FileManager/FileManager.cpp FileManager/FileManager.h FileManager/std_image.cpp)
+set(SOURCE_FILES src/main.cpp src/shader.cpp src/shader.h FileManager/FileManager.cpp FileManager/FileManager.h FileManager/std_image.cpp src/camera.cpp src/camera.h)
 
 set(EXE_FILE Game)
 
