@@ -74,7 +74,7 @@ namespace gl3{
 
     void shader::setVector(const std::string &uniform, glm::vec4 vector) const {
         unsigned int uniformLocation = glGetUniformLocation(shaderProgram, uniform.c_str());
-        glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(vector));
+        glUniform4f(uniformLocation, vector.x, vector.y, vector.z, vector.w);
     }
 
     void shader::setMatrix(const std::string &uniform, glm::mat4 matrix) const {

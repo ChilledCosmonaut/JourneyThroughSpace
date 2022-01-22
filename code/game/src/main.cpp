@@ -162,47 +162,9 @@ int main() {
         return -1;
     }
 
-    //Vertex Shader
-    unsigned int vShader;
-    vShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vShader, 1, &vShaderSource, nullptr);
-    glCompileShader(vShader);
-
-    int success;
-    char infoLog[512];
-
-    glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(vShader, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::VERTEX::COMPILATION_FAILED" << infoLog << std::endl;
-    }
-
-    // Fragment Shader
-    unsigned int fShader;
-    fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1, &fShaderSource, nullptr);
-    glCompileShader(fShader);
-
-    glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(fShader, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
-    }
-
-    // Fragment Shader
-    unsigned int fShader2;
-    fShader2 = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader2, 1, &fShaderSource2, nullptr);
-    glCompileShader(fShader2);
-
-    glGetShaderiv(fShader2, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(fShader2, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
-    }
-
-    gl3::shader shader = gl3::shader("shaders/vertexShader.glsl","shaders/fragmentShader.glsl");
-    shader.use();
+    gl3::shader litShader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+    gl3::shader lightShader = gl3::shader("shaders/vertexShader.glsl", "shaders/lightFragmentShader.glsl");
+    litShader.use();
 
     // Space Ship vertices
     float vertices[] = {
@@ -310,8 +272,17 @@ int main() {
     stbi_image_free(textureInfoFace.content);
     // color attribute
 
-    shader.setInt("texture1",0);
-    shader.setInt("texture2",1);
+    litShader.setInt("texture1", 0);
+    litShader.setInt("texture2", 1);
+
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    // we only need to bind to the VBO, the container's VBO's data already contains the data.
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // set the vertex attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
 
     //Element Buffer Object
@@ -350,9 +321,13 @@ int main() {
 
         processUserInput(window);
 
-        //shader.setMatrix("model",trans);
-        //modelTransform(&shader);
-        //viewTransform(&shader);
+        //litShader.setMatrix("model",trans);
+        //modelTransform(&litShader);
+        //viewTransform(&litShader);
+
+        litShader.use();
+
+        litShader.setVector("lightColor",  glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;
@@ -360,12 +335,12 @@ int main() {
         glm::mat4 view;
         //view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0,0.0));
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        shader.setMatrix("view", view);
+        litShader.setMatrix("view", view);
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
-        shader.setMatrix("projection", projection);
-        //projectionTransform(&shader);
-        shader.setFloat("mixingFactor", xTranslate);
+        litShader.setMatrix("projection", projection);
+        //projectionTransform(&litShader);
+        litShader.setFloat("mixingFactor", xTranslate);
 
         try {
             glActiveTexture(GL_TEXTURE0);
@@ -385,10 +360,23 @@ int main() {
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMatrix("model", model);
+            litShader.setMatrix("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        lightShader.use();
+        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f));
+        lightShader.setMatrix("model", model);
+        lightShader.setMatrix("view", view);
+        lightShader.setMatrix("projection", projection);
+
+        glBindVertexArray(lightVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         // update deltaTime
