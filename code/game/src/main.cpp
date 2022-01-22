@@ -17,6 +17,14 @@ float rotStep = 90.0f;
 float xTranslate = 0.0f, yTranslate = 0.0f;
 float transStep = 1.0f;
 
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+
+float yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
+
+float lastX = 400, lastY = 300;
+
 const char* vShaderSource = "#version 460 core\n"
                             "layout (location = 0) in vec3 aPos;\n"
                             "layout (location = 1) in vec3 aColor;\n"
@@ -52,6 +60,40 @@ void modelTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
 void viewTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
 void projectionTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    fov -= (float)yoffset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos){
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -59,26 +101,33 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void processUserInput(GLFWwindow *window){
+
+    const float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
+
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     // user input
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        zRotation -= rotStep * deltaTime;
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //zRotation -= rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        zRotation += rotStep * deltaTime;
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //zRotation += rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;
+        /*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*/
+        cameraPos += cameraSpeed * cameraFront;
     }
 
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;
+        cameraPos -= cameraSpeed * cameraFront;
+        /*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*/
     }
 }
 
@@ -97,9 +146,15 @@ int main() {
         glfwTerminate();
         return -1;
     }
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+
+    glfwSetScrollCallback(window, scroll_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -286,7 +341,7 @@ int main() {
             glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    //glfwSetTime(1.0/60);
+    glfwSetTime(1.0/60);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -297,8 +352,19 @@ int main() {
 
         //shader.setMatrix("model",trans);
         //modelTransform(&shader);
-        viewTransform(&shader);
-        projectionTransform(&shader);
+        //viewTransform(&shader);
+
+        const float radius = 10.0f;
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
+        glm::mat4 view;
+        //view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0,0.0));
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        shader.setMatrix("view", view);
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+        shader.setMatrix("projection", projection);
+        //projectionTransform(&shader);
         shader.setFloat("mixingFactor", xTranslate);
 
         try {
@@ -327,7 +393,7 @@ int main() {
 
         // update deltaTime
         deltaTime = glfwGetTime();
-        //glfwSetTime(0);
+        glfwSetTime(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
