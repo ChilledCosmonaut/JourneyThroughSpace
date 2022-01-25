@@ -3,6 +3,7 @@ out vec4 fragColor;
 
 in vec3 Normal;
 in vec3 FragPos;
+in vec2 TexCoords;
 
 void main()
 {
