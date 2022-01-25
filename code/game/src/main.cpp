@@ -220,9 +220,18 @@ int main() {
 
         litShader.use();
 
-        litShader.setVector("lightColor",  glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-        litShader.setVector("lightPos", glm::vec4(lightPos, 1.0));
-        litShader.setVector("viewPos", glm::vec4(camera.Position, 1.0f));
+        litShader.setVector("light.position",glm::vec4(lightPos, 1.0f));
+        litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
+
+        litShader.setVector("light.ambient",glm::vec4(0.2f, 0.2f, 0.2f,1.0f));
+        litShader.setVector("light.diffuse",glm::vec4(0.5f, 0.5f, 0.5f,1.0f));
+        litShader.setVector("light.specular",glm::vec4(1.0f,1.0f,1.0f,1.0f));
+
+        // material properties
+        litShader.setVector("material.ambient",glm::vec4(1.0f, 0.5f, 0.31f,1.0f));
+        litShader.setVector("material.diffuse",glm::vec4(1.0f, 0.5f, 0.31f,1.0f));
+        litShader.setVector("material.specular",glm::vec4(0.5f, 0.5f, 0.5f,1.0f)); // specular lighting doesn't have full effect on this object's material
+        litShader.setFloat("material.shininess", 32.0f);
 
         glm::mat4 view;
         view = camera.GetViewMatrix();
