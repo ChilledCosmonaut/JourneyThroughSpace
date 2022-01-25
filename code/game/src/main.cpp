@@ -287,6 +287,26 @@ int main() {
     litShader.setInt("material.specular", 1);
     litShader.setInt("material.emission", 2);
 
+    glm::vec3 cubePositions[] = {
+            glm::vec3( 0.0f,  0.0f,  0.0f),
+            glm::vec3( 2.0f,  5.0f, -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3( 2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f,  3.0f, -7.5f),
+            glm::vec3( 1.3f, -2.0f, -2.5f),
+            glm::vec3( 1.5f,  2.0f, -2.5f),
+            glm::vec3( 1.5f,  0.2f, -1.5f),
+            glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+
+    glm::vec3 pointLightPositions[] = {
+            glm::vec3( 0.7f,  0.2f,  2.0f),
+            glm::vec3( 2.3f, -3.3f, -4.0f),
+            glm::vec3(-4.0f,  2.0f, -12.0f),
+            glm::vec3( 0.0f,  0.0f, -3.0f)
+    };
+
     glEnable(GL_DEPTH_TEST);
 
     glfwSetTime(1.0/60);
@@ -301,12 +321,38 @@ int main() {
 
         litShader.use();
 
-        litShader.setVector("light.position",glm::vec4(lightPos, 1.0f));
         litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
 
-        litShader.setVector("light.ambient",glm::vec4(0.2f, 0.2f, 0.2f,1.0f));
-        litShader.setVector("light.diffuse",glm::vec4(0.5f, 0.5f, 0.5f,1.0f));
-        litShader.setVector("light.specular",glm::vec4(1.0f,1.0f,1.0f,1.0f));
+        litShader.setVector3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+
+        litShader.setVector3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        litShader.setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+        litShader.setVector3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+
+        for(int i = 0; i < pointLightPositions->length(); i++){
+            litShader.setVector3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
+
+            litShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
+            litShader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.9f);
+            litShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
+
+            litShader.setVector3("pointLights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+            litShader.setVector3("pointLights[" + std::to_string(i) + "].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+            litShader.setVector3("pointLights[" + std::to_string(i) + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        }
+
+        litShader.setVector3("spotLight.direction", glm::vec3());
+        litShader.setVector3("spotLight.position", glm::vec3());
+
+        litShader.setFloat("spotLight.constant", 1.0f);
+        litShader.setFloat("spotLight.linear", 0.09f);
+        litShader.setFloat("spotLight.quadratic", 0.032f);
+
+        litShader.setVector3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+        litShader.setVector3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setVector3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setFloat("spotLight.cutoff", glm::cos(glm::radians(12.5f)));
+        litShader.setFloat("spotLight.outerCutoff", glm::cos(glm::radians(15.0f)));
 
         // material properties
         litShader.setVector("material.specular",glm::vec4(0.5f, 0.5f, 0.5f,1.0f)); // specular lighting doesn't have full effect on this object's material
@@ -329,27 +375,39 @@ int main() {
         litShader.setMatrix("projection", projection);
         glm::mat4 model = glm::mat4(1.0f);
         glBindVertexArray(VAO);
-        model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  0.0f));
-        litShader.setMatrix("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::translate(model, glm::vec3( 2.0f,  2.0f,  0.0f));
-        model = glm::rotate(model, glm::radians(20.0f),glm::vec3(0.0f,0.0f,1.0f));
-        litShader.setMatrix("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for(unsigned int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            litShader.setMatrix("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
 
         lightShader.use();
         view = camera.GetViewMatrix();
         litShader.setMatrix("view", view);
         projection = glm::perspective(glm::radians(camera.Zoom), W_WIDTH / W_HEIGHT, 0.1f, 100.0f);
         litShader.setMatrix("projection", projection);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightShader.setMatrix("model", model);
         lightShader.setMatrix("view", view);
         lightShader.setMatrix("projection", projection);
+
         glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for(int i = 0; i < pointLightPositions->length(); i++){
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
+            lightShader.setMatrix("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+
 
 
         // update deltaTime
