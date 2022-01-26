@@ -1,4 +1,3 @@
-
 #include "FileManager.h"
 
 namespace files{
