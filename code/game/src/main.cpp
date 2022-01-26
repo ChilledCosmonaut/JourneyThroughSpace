@@ -135,7 +135,9 @@ int main() {
 
     gl3::shader litShader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
-    Model model = Model("../../assets/backpack.obj");
+    Model model = Model("../../assets/TransportShip.fbx");
+
+    glEnable(GL_DEPTH_TEST);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -146,6 +148,15 @@ int main() {
 
         // don't forget to enable shader before setting uniforms
         litShader.use();
+
+        litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
+
+        litShader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
+
+        litShader.setVector3("dirLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+        litShader.setVector3("dirLight.diffuse", glm::vec3(0.0f, 0.0f, 0.0f));
+        litShader.setVector3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)W_WIDTH / (float)W_HEIGHT, 0.1f, 100.0f);

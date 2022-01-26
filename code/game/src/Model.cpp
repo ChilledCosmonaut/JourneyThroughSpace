@@ -8,11 +8,23 @@ void Model::Draw(gl3::shader &shader) {
         mesh.Draw(shader);
 }
 
-void Model::loadModel(string path) {
-    const aiScene *scene = files::FileManager::loadModelFromFile(path);
+void Model::loadModel(const string& path) {
+    /*const aiScene *scene = files::FileManager::loadModelFromFile(path);
+    directory = path.substr(0, path.find_last_of('/'));*/
+    // read file via ASSIMP
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    // check for errors
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+    {
+        cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+        return;
+    }
+    // retrieve the directory path of the filepath
     directory = path.substr(0, path.find_last_of('/'));
-    if(scene != nullptr)
-        processNode(scene->mRootNode, scene);
+
+    // process ASSIMP's root node recursively
+    processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
@@ -118,6 +130,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
