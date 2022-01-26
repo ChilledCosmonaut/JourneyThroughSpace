@@ -2,7 +2,18 @@
 
 #define NR_POINT_LIGHTS 4
 
-out vec4 fragColor;
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D texture_diffuse1;
+
+void main()
+{
+    FragColor = texture(texture_diffuse1, TexCoords);
+}
+
+/*out vec4 fragColor;
 
 in vec3 Normal;
 in vec3 FragPos;
@@ -138,4 +149,4 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
 
     return (ambient + (diffuse +  specular) * intensity) * attenuation;
-}
+}*/
