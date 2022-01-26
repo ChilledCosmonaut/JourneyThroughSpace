@@ -311,6 +311,8 @@ int main() {
 
     glfwSetTime(1.0/60);
 
+    std::cout << pointLightPositions->length() << std::endl;
+
     while(!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -329,7 +331,7 @@ int main() {
         litShader.setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
         litShader.setVector3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-        for(int i = 0; i < pointLightPositions->length(); i++){
+        for(int i = 0; i < 4; i++){
             litShader.setVector3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
 
             litShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
@@ -341,8 +343,8 @@ int main() {
             litShader.setVector3("pointLights[" + std::to_string(i) + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
         }
 
-        litShader.setVector3("spotLight.direction", glm::vec3());
-        litShader.setVector3("spotLight.position", glm::vec3());
+        litShader.setVector3("spotLight.direction", camera.Front);
+        litShader.setVector3("spotLight.position", camera.Position);
 
         litShader.setFloat("spotLight.constant", 1.0f);
         litShader.setFloat("spotLight.linear", 0.09f);
@@ -398,7 +400,7 @@ int main() {
 
         glBindVertexArray(lightVAO);
 
-        for(int i = 0; i < pointLightPositions->length(); i++){
+        for(int i = 0; i < 4; i++){
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
             model = glm::scale(model, glm::vec3(0.2f));
