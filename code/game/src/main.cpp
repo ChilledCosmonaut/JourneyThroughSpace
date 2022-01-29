@@ -5,13 +5,13 @@
 #include "shader.h"
 #include "../FileManager/stb_image.h"
 #include "camera.h"
-#include "Model.h"
+#include "../GraphicsEngine/Model.h"
 
 
 double deltaTime;
 
-const float W_WIDTH = 800.0f;
-const float W_HEIGHT = 600.0f;
+const float W_WIDTH = 1920.0f;
+const float W_HEIGHT = 1080.0f;
 const char* W_TITLE = "GameLab III";
 
 // camera
@@ -23,12 +23,15 @@ bool firstMouse = true;
 float zRotation = 0.0f;
 float rotStep = 90.0f;
 float xTranslate = 0.0f, yTranslate = 0.0f;
-float transStep = 1.0f;
+float transStep = 20.0f;
 
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-glm::vec3 lightPos    = glm::vec3(1.2f, 1.0f,  2.0f);
+glm::vec3 lightPos    = glm::vec3(0.0f, -0.5f, 1.0f);
+glm::vec3 shipPos1    = glm::vec3(5.0f, -95.0f, -55.0f);
+glm::vec3 shipPos2    = glm::vec3(20.0f, -65.0f, -50.0f);
+glm::vec3 shipPos3    = glm::vec3(40.0f, -90.0f, -60.0f);
 
 float yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
 
@@ -100,6 +103,44 @@ void processUserInput(GLFWwindow *window){
         /*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
         xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*/
     }
+
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        shipPos1.z += transStep * deltaTime;
+        shipPos2.z += transStep * deltaTime;
+        shipPos3.z += transStep * deltaTime;
+    }
+}
+
+unsigned int loadCubemap(vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load((std::string("../../assets/textures/SpaceSkybox/").append(faces[i])).c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
 }
 
 int main() {
@@ -123,7 +164,7 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glfwSetCursorPosCallback(window, mouse_callback);
+    //glfwSetCursorPosCallback(window, mouse_callback);
 
     glfwSetScrollCallback(window, scroll_callback);
 
@@ -133,9 +174,134 @@ int main() {
         return -1;
     }
 
+    gl3::shader skyboxShader = gl3::shader("shaders/SkyBoxVertexShader.glsl", "shaders/SkyBoxFragmentShader.glsl");
     gl3::shader litShader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
-    Model model = Model("../../assets/TransportShip.fbx");
+    //Model model = Model("../../assets/TransportShip.fbx");
+    Model model1 = Model("../../assets/SpaceShip4.obj");
+    Model model2 = Model("../../assets/SpaceShip2.obj");
+    Model model3 = Model("../../assets/SpaceShip3.obj");
+
+    float skyboxVertices[] = {
+            // positions
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+            1.0f,  1.0f, -1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+            1.0f, -1.0f,  1.0f
+    };
+
+    float vertices[] = {
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+    unsigned int skyboxVAO, skyboxVBO;
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
+
+    // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+    unsigned int VBO, lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(lightCubeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // note that we update the lamp's position attribute's stride to reflect the updated buffer data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    vector<std::string> faces{
+            "AllSky_Space_AnotherPlanet_Cam_3_Right-X.png",
+            "AllSky_Space_AnotherPlanet_Cam_2_Left+X.png",
+            "AllSky_Space_AnotherPlanet_Cam_4_Up+Y.png",
+            "AllSky_Space_AnotherPlanet_Cam_5_Down-Y.png",
+            "AllSky_Space_AnotherPlanet_Cam_0_Front+Z.png",
+            "AllSky_Space_AnotherPlanet_Cam_1_Back-Z.png"
+    };
+    unsigned int cubemapTexture = loadCubemap(faces);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -144,6 +310,19 @@ int main() {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glDepthMask(GL_FALSE);
+        skyboxShader.use();
+        // ... set view and projection matrix
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)W_WIDTH / (float)W_HEIGHT, 0.1f, 300.0f);
+        glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+        skyboxShader.setMatrix("projection", projection);
+        skyboxShader.setMatrix("view", view);
+        glBindVertexArray(skyboxVAO);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDepthMask(GL_TRUE);
+        // ... draw rest of the scene
+
         processUserInput(window);
 
         // don't forget to enable shader before setting uniforms
@@ -151,25 +330,72 @@ int main() {
 
         litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
 
-        litShader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
+        litShader.setVector3("dirLight.direction", -lightPos);
 
-        litShader.setVector3("dirLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-        litShader.setVector3("dirLight.diffuse", glm::vec3(0.0f, 0.0f, 0.0f));
-        litShader.setVector3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+        litShader.setVector3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        litShader.setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+        litShader.setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));
 
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)W_WIDTH / (float)W_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.Zoom), (float)W_WIDTH / (float)W_HEIGHT, 0.1f, 100.0f);
+        view = camera.GetViewMatrix();
         litShader.setMatrix("projection", projection);
         litShader.setMatrix("view", view);
 
         // render the loaded model
-        glm::mat4 modelTransform = glm::mat4(1.0f);
-        modelTransform = glm::translate(modelTransform, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        modelTransform = glm::scale(modelTransform, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        litShader.setMatrix("model", modelTransform);
-        model.Draw(litShader);
+        glm::mat4 model = glm::mat4(1.0f);
+        /*model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
+        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        litShader.setMatrix("model", model);
+        model.Draw(litShader);*/
+
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos1);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model1.Draw(litShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos2);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model2.Draw(litShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos3);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model3.Draw(litShader);
+
+        // also draw the lamp object
+        /*lightShader.use();
+        lightShader.setMatrix("projection", projection);
+        lightShader.setMatrix("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        lightShader.setMatrix("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        lightShader.setMatrix("projection", projection);
+        lightShader.setMatrix("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
+        model = glm::scale(model, glm::vec3(0.4f)); // a smaller cube
+        lightShader.setMatrix("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
         // update deltaTime
         deltaTime = glfwGetTime();
@@ -202,7 +428,7 @@ void viewTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     /*view = glm::lookAt(glm::vec3(0.0f,0.0f,25.0f),
                        glm::vec3(0.0f,0.0f,0.0f),
-                       glm::vec3(0.0f,1.0f,0.0f));/*glm::vec3(0.0f,0.0f,0.0f),
+                       glm::vec3(0.0f,1.0f,0.0f));//glm::vec3(0.0f,0.0f,0.0f),
                        glm::vec3(0.0f,0.0f,-1.0f),
                        glm::vec3(0.0f,1.0f,0.0f));*/
 

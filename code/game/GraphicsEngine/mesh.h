@@ -1,12 +1,14 @@
 #pragma once
 
-#include "shader.h"
+#include "../src/shader.h"
 
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
+#include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 
 #include <string>
 #include <vector>
+#include <utility>
+
 using namespace std;
 
 struct Vertex {

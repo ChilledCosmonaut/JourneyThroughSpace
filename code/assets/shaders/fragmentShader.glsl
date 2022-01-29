@@ -31,7 +31,7 @@ void main()
     // phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);//texture(texture_diffuse1,TexCoords);
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
