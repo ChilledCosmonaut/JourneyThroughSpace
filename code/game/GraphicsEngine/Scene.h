@@ -25,7 +25,12 @@ namespace Graphics{
     class Scene {
     public:
         Scene();
+
         void Render();
+
+        [[maybe_unused]] [[nodiscard]] const vector<glm::vec3> &getDirectionalLightPosition() const;
+
+        [[maybe_unused]] void setDirectionalLightPosition(const vector<glm::vec3> &directionalLightPosition);
 
     private:
         void DisplaySkybox();
@@ -35,6 +40,7 @@ namespace Graphics{
 
         vector<std::pair<Model,gl3::shader>> sceneModels;
         Camera camera;
+        vector<glm::vec3> directionalLightPositions;
         Skybox skybox;
     };
 }

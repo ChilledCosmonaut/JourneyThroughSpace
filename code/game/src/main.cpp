@@ -237,15 +237,12 @@ int main() {
         litShader.setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));
 
 
-        // view/projection transformations
-        /*projection = glm::perspective(glm::radians(camera.Zoom), (float)W_WIDTH / (float)W_HEIGHT, 0.1f, 100.0f);
-        view = camera.GetViewMatrix();
-        litShader.setMatrix("projection", projection);
-        litShader.setMatrix("view", view);*/
+
+        /**/
 
         // render the loaded model
         /*glm::mat4 model = glm::mat4(1.0f);
-        /*model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
         model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         litShader.setMatrix("model", model);
