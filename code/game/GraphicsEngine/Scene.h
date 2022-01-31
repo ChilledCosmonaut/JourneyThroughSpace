@@ -28,9 +28,12 @@ namespace Graphics{
 
         void Render();
 
-        [[maybe_unused]] [[nodiscard]] const vector<glm::vec3> &getDirectionalLightPosition() const;
+        [[maybe_unused]] [[nodiscard]] const glm::vec3 &getDirectionalLightPositionAtIndex(int index) const;
 
-        [[maybe_unused]] void setDirectionalLightPosition(const vector<glm::vec3> &directionalLightPosition);
+        [[maybe_unused]] void setDirectionalLightPosition(glm::vec3 &directionalLightPosition);
+        [[nodiscard]] const std::pair<Model, gl3::shader> &getSceneModelAtIndex(int index) const;
+
+        void AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset);
 
     private:
         void DisplaySkybox();
@@ -38,7 +41,10 @@ namespace Graphics{
         void DisplayModels();
         void SetUpSkybox();
 
-        vector<std::pair<Model,gl3::shader>> sceneModels;
+        vector<std::pair<Model, gl3::shader>> sceneModels;
+    public:
+
+    private:
         Camera camera;
         vector<glm::vec3> directionalLightPositions;
         Skybox skybox;

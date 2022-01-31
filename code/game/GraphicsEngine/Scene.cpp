@@ -138,12 +138,21 @@ namespace Graphics{
         skybox.texture = loadCubemap(skybox.faces);
     }
 
-    [[maybe_unused]] const vector<glm::vec3> &Scene::getDirectionalLightPosition() const {
-        return directionalLightPositions;
+    [[maybe_unused]] const glm::vec3 &Scene::getDirectionalLightPositionAtIndex(int index) const {
+        return directionalLightPositions[index];
     }
 
-    [[maybe_unused]] void Scene::setDirectionalLightPosition(const vector<glm::vec3> &directionalLightPosition) {
-        Scene::directionalLightPositions = directionalLightPosition;
+    [[maybe_unused]] void Scene::setDirectionalLightPosition(glm::vec3 &directionalLightPosition) {
+        Scene::directionalLightPositions.push_back(directionalLightPosition);
+    }
+
+    const std::pair<Model, gl3::shader> &Scene::getSceneModelAtIndex(int index) const {
+        return sceneModels[index];
+    }
+
+    void Scene::AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
+        pair<Model, gl3::shader> sceneModel(model, gl3::shader(vertexShaderAsset, fragmentShaderAsset));
+        Scene::sceneModels.push_back(sceneModel);
     }
 }
 
