@@ -1,6 +1,9 @@
 #pragma once
 
+#include <iostream>
+
 #include "Model.h"
+#include "camera.h"
 
 namespace Graphics{
 
@@ -14,6 +17,7 @@ namespace Graphics{
         void DisplayModels();
 
         vector<std::pair<Model,gl3::shader>> sceneModels;
+        Camera camera;
     };
 }
 
