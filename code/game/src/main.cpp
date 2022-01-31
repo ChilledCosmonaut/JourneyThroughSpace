@@ -211,6 +211,7 @@ int main() {
 
     Graphics::Scene scene = Graphics::Scene();
 
+    scene.AddSceneModels(model1, "shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
 
     glEnable(GL_DEPTH_TEST);
