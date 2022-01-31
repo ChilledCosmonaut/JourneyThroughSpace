@@ -6,6 +6,7 @@
 #include "../FileManager/stb_image.h"
 #include "../GraphicsEngine/camera.h"
 #include "../GraphicsEngine/Model.h"
+#include "../GraphicsEngine/Scene.h"
 
 
 double deltaTime;
@@ -208,6 +209,8 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    Graphics::Scene scene = Graphics::Scene();
+
 
 
     glEnable(GL_DEPTH_TEST);
@@ -217,13 +220,13 @@ int main() {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+        scene.Render();
         // ... draw rest of the scene
 
         processUserInput(window);
 
         // don't forget to enable shader before setting uniforms
-        litShader.use();
+        /*litShader.use();
 
         litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
 
@@ -241,14 +244,14 @@ int main() {
         litShader.setMatrix("view", view);*/
 
         // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
+        /*glm::mat4 model = glm::mat4(1.0f);
         /*model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
         model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         litShader.setMatrix("model", model);
         model.Draw(litShader);*/
 
-        model = glm::mat4(1.0f);
+        /*model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
         model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
         model = glm::translate(model, shipPos1);
