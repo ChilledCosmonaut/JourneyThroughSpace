@@ -31,9 +31,10 @@ namespace Graphics{
         [[maybe_unused]] [[nodiscard]] const glm::vec3 &getDirectionalLightPositionAtIndex(int index) const;
 
         [[maybe_unused]] void setDirectionalLightPosition(glm::vec3 &directionalLightPosition);
-        [[nodiscard]] const std::pair<Model, gl3::shader> &getSceneModelAtIndex(int index) const;
 
-        void AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset);
+        [[maybe_unused]] [[nodiscard]] const std::pair<Model, gl3::shader> &getSceneModelAtIndex(int index) const;
+
+        [[maybe_unused]] void AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset);
 
     private:
         void DisplaySkybox();

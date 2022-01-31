@@ -146,11 +146,11 @@ namespace Graphics{
         Scene::directionalLightPositions.push_back(directionalLightPosition);
     }
 
-    const std::pair<Model, gl3::shader> &Scene::getSceneModelAtIndex(int index) const {
+    [[maybe_unused]] const std::pair<Model, gl3::shader> &Scene::getSceneModelAtIndex(int index) const {
         return sceneModels[index];
     }
 
-    void Scene::AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
+    [[maybe_unused]] void Scene::AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
         pair<Model, gl3::shader> sceneModel(model, gl3::shader(vertexShaderAsset, fragmentShaderAsset));
         Scene::sceneModels.push_back(sceneModel);
     }
