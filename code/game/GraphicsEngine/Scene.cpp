@@ -34,8 +34,6 @@ namespace Graphics{
         return textureID;
     }
 
-
-
     void Graphics::Scene::Render() {
         DisplaySkybox();
         DisplayLights();
@@ -122,14 +120,6 @@ namespace Graphics{
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
 
-        vector<std::string> faces{
-                "AllSky_Space_AnotherPlanet_Cam_3_Right-X.png",
-                "AllSky_Space_AnotherPlanet_Cam_2_Left+X.png",
-                "AllSky_Space_AnotherPlanet_Cam_4_Up+Y.png",
-                "AllSky_Space_AnotherPlanet_Cam_5_Down-Y.png",
-                "AllSky_Space_AnotherPlanet_Cam_0_Front+Z.png",
-                "AllSky_Space_AnotherPlanet_Cam_1_Back-Z.png"
-        };
         skybox.texture = loadCubemap(faces);
     }
 }
