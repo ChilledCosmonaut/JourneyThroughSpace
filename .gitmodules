@@ -1,0 +1,9 @@
+[submodule "code/externalCode/glfw"]
+	path = code/externalCode/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "code/externalCode/glm"]
+	path = code/externalCode/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "code/externalCode/assimp"]
+	path = code/externalCode/assimp
+	url = https://github.com/assimp/assimp.git
