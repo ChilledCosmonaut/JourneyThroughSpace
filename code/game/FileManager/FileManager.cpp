@@ -1,4 +1,3 @@
-
 #include "FileManager.h"
 
 namespace files{
@@ -40,6 +39,14 @@ namespace files{
             throw std::runtime_error("ERROR::ASSIMP::" + std::string(importer.GetErrorString()));
         }
         return modelScene;
+    }
+
+    texture FileManager::loadTextureFromFile(const fs::path &relativeFilePath) {
+        texture textureFile{};
+        std::string stringFilePath = resolveForSubdirectory(relativeFilePath, "../../assets/textures").string();
+        const char* filePath = stringFilePath.c_str();
+        textureFile.content = stbi_load(filePath, &textureFile.width, &textureFile.height, &textureFile.colChannel, 0);
+        return textureFile;
     }
 }
 

@@ -1,42 +1,69 @@
-#include <iostream>
+
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.h"
-
+#include "../FileManager/stb_image.h"
+#include "../GraphicsEngine/camera.h"
+#include "../GraphicsEngine/Model.h"
+#include "../GraphicsEngine/Scene.h"
+#include <iostream>
 
 double deltaTime;
 
-const float W_WIDTH = 800.0f;
-const float W_HEIGHT = 600.0f;
+const float W_WIDTH = 1920.0f;
+const float W_HEIGHT = 1080.0f;
 const char* W_TITLE = "GameLab III";
+
+// camera
+Camera *camera;
+float lastX = W_WIDTH / 2.0f;
+float lastY = W_HEIGHT / 2.0f;
+bool firstMouse = true;
 
 float zRotation = 0.0f;
 float rotStep = 90.0f;
 float xTranslate = 0.0f, yTranslate = 0.0f;
-float transStep = 1.0f;
+float transStep = 20.0f;
 
-const char* vShaderSource = "#version 460 core\n"
-                            "layout (location = 0) in vec3 aPos;\n"
-                            "uniform mat4 model;\n"
-                            "uniform mat4 view;\n"
-                            "uniform mat4 projection;\n"
-                            "void main()\n"
-                            "{\n"
-                            "    gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
-                            "}\n";
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+glm::vec3 lightPos    = glm::vec3(0.0f, -0.5f, 1.0f);
+glm::vec3 shipPos1    = glm::vec3(5.0f, -95.0f, -55.0f);
+glm::vec3 shipPos2    = glm::vec3(20.0f, -65.0f, -50.0f);
+glm::vec3 shipPos3    = glm::vec3(40.0f, -90.0f, -60.0f);
 
-const char* fShaderSource = "#version 460 core\n"
-                            "out vec4 fragColor;\n"
-                            "void main()\n"
-                            "{\n"
-                            "   fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
-                            "}\n";
+float yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
 
 
-void modelTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
-void viewTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
-void projectionTransform(unsigned int shaderProgram);//gl3::shader* shaderProgram);
+void modelTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+void viewTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+void projectionTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera->ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera->ProcessMouseMovement(xoffset, yoffset);
+}
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -45,28 +72,48 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void processUserInput(GLFWwindow *window){
+
+    const float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
+
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     // user input
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        zRotation -= rotStep * deltaTime;
+        camera->ProcessKeyboard(RIGHT, deltaTime);
+        //std::cout<<"Pressed D" + to_string(deltaTime) <<endl;
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //zRotation -= rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        zRotation += rotStep * deltaTime;
+        camera->ProcessKeyboard(LEFT, deltaTime);
+        //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //zRotation += rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;
+        camera->ProcessKeyboard(FORWARD, deltaTime);
+        /*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*/
+        //cameraPos += cameraSpeed * cameraFront;
     }
 
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;
+        camera->ProcessKeyboard(BACKWARD, deltaTime);
+        //cameraPos -= cameraSpeed * cameraFront;
+        /*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*/
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        shipPos1.z += transStep * deltaTime;
+        shipPos2.z += transStep * deltaTime;
+        shipPos3.z += transStep * deltaTime;
     }
 }
+
+
 
 int main() {
     glfwInit();
@@ -76,16 +123,22 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "GameLabIII", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(W_WIDTH, W_HEIGHT, W_TITLE, nullptr, nullptr);
     if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+
+    glfwSetScrollCallback(window, scroll_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -93,91 +146,159 @@ int main() {
         return -1;
     }
 
-    //Vertex Shader
-    unsigned int vShader;
-    vShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vShader, 1, &vShaderSource, nullptr);
-    glCompileShader(vShader);
+    gl3::shader litShader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
-    int success;
-    char infoLog[512];
+    //Model model = Model("../../assets/TransportShip.fbx");
+    Model model1 = Model("../../assets/SpaceShip4.obj");
+    Model model2 = Model("../../assets/SpaceShip2.obj");
+    Model model3 = Model("../../assets/SpaceShip3.obj");
 
-    glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(vShader, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::VERTEX::COMPILATION_FAILED" << infoLog << std::endl;
-    }
-
-    // Fragment Shader
-    unsigned int fShader;
-    fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1, &fShaderSource, nullptr);
-    glCompileShader(fShader);
-
-    glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetShaderInfoLog(fShader, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << infoLog << std::endl;
-    }
-
-    // SHader Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vShader);
-    glAttachShader(shaderProgram, fShader);
-    glLinkProgram(shaderProgram);
-
-    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
-    if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cout<<"ERROR::SHADER::PROGRAM::LINKING_FAILED" << infoLog << std::endl;
-    }
-
-    glUseProgram(shaderProgram);
-
-    /*gl3::shader shaderProgram = gl3::shader("shaders/vertexShader.glsl","shaders/fragmentShader.glsl");
-    shaderProgram.use();*/
-
-    // Space Ship vertices
     float vertices[] = {
-            0.5f, 0.025f, 0.0f,
-            0.0f, 0.3f, 0.0f,
-            -0.2f, 0.05f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-            0.5f, -0.025f, 0.0f,
-            0.0f, -0.3f, 0.0f,
-            -0.2f, -0.05f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
-
-
-    //Vertex Buffer Object
-    unsigned int VBO;
+    // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+    unsigned int VBO, lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindVertexArray(lightCubeVAO);
 
-    //Vertex Attribute Object
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // note that we update the lamp's position attribute's stride to reflect the updated buffer data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glfwSetTime(1.0/60);
+    Graphics::Scene scene = Graphics::Scene();
+
+    camera = scene.getCamera();
+
+    gl3::shader shader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+
+    scene.AddSceneModels(model1, &shader);
+
+
+    glEnable(GL_DEPTH_TEST);
 
     while(!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        scene.Render();
+        // ... draw rest of the scene
 
         processUserInput(window);
 
-        modelTransform(shaderProgram);
-        viewTransform(shaderProgram);
-        projectionTransform(shaderProgram);
+        // don't forget to enable shader before setting uniforms
+        /*litShader.use();
 
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
+
+        litShader.setVector3("dirLight.direction", -lightPos);
+
+        litShader.setVector3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        litShader.setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+        litShader.setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));
+
+
+
+        /**/
+
+        // render the loaded model
+        /*glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
+        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        litShader.setMatrix("model", model);
+        model.Draw(litShader);*/
+
+        /*model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos1);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model1.Draw(litShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos2);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model2.Draw(litShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        model = glm::translate(model, shipPos3);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("model", model);
+        model3.Draw(litShader);
+
+        // also draw the lamp object
+        /*lightShader.use();
+        lightShader.setMatrix("projection", projection);
+        lightShader.setMatrix("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        lightShader.setMatrix("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        lightShader.setMatrix("projection", projection);
+        lightShader.setMatrix("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
+        model = glm::scale(model, glm::vec3(0.4f)); // a smaller cube
+        lightShader.setMatrix("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
         // update deltaTime
         deltaTime = glfwGetTime();
@@ -191,41 +312,41 @@ int main() {
     return 0;
 }
 
-void modelTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void modelTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(xTranslate, yTranslate, 0.0f));
-    model = glm::rotate(model, glm::radians(zRotation), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    //model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
+    //model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
 
-    //shaderProgram->setMatrix("model", model);
+    shaderProgram->setMatrix("model", model);
 
-    int modelLocation = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+    /*int modelLocation = glGetUniformLocation(shaderProgram, "model");
+    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));*/
 }
 
-void viewTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void viewTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
-    glm::mat4 view;
-    view = glm::lookAt(glm::vec3(0.0f,0.0f,25.0f),
+    glm::mat4 view  = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    /*view = glm::lookAt(glm::vec3(0.0f,0.0f,25.0f),
                        glm::vec3(0.0f,0.0f,0.0f),
-                       glm::vec3(0.0f,1.0f,0.0f));/*glm::vec3(0.0f,0.0f,0.0f),
+                       glm::vec3(0.0f,1.0f,0.0f));//glm::vec3(0.0f,0.0f,0.0f),
                        glm::vec3(0.0f,0.0f,-1.0f),
                        glm::vec3(0.0f,1.0f,0.0f));*/
 
-    //shaderProgram->setMatrix("view",view);
+    shaderProgram->setMatrix("view",view);
 
-    int viewLocation = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+    /*int viewLocation = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));*/
 }
 
-void projectionTransform(unsigned int shaderProgram){//gl3::shader* shaderProgram){
+void projectionTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
 
-    glm::mat4 projection = glm::perspective(glm::radians(15.0f), W_WIDTH/W_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W_WIDTH/W_HEIGHT, 0.1f, 100.0f);
 
-    //shaderProgram->setMatrix("projection", projection);
+    shaderProgram->setMatrix("projection", projection);
 
-    int projectionLocation = glGetUniformLocation(shaderProgram, "projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+    /*int projectionLocation = glGetUniformLocation(shaderProgram, "projection");
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));*/
 }
-
