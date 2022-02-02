@@ -2,6 +2,8 @@
 
 namespace Graphics{
 
+    glm::vec3 lightPos = glm::vec3(0.0f, -0.5f, 1.0f);
+
     unsigned int loadCubemap(vector<std::string> faces)
     {
         unsigned int textureID;
@@ -60,20 +62,28 @@ namespace Graphics{
 
     void Scene::DisplayModels() {
         for (auto & sceneModel : sceneModels) {
-            sceneModel.second.use();
+            sceneModel.second->use();
             // view/projection transformations
             glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
             glm::mat4 view = camera.GetViewMatrix();
-            sceneModel.second.setMatrix("projection", projection);
-            sceneModel.second.setMatrix("view", view);
+            sceneModel.second->setMatrix("projection", projection);
+            sceneModel.second->setMatrix("view", view);
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
             model = glm::translate(model, glm::vec3(5.0f, 0.0f, -55.0f)); // translate it down, so it's at the center of the scene
             model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-            sceneModel.second.setMatrix("model", model);
+            sceneModel.second->setMatrix("model", model);
 
-            sceneModel.first.Draw(sceneModel.second);
+            sceneModel.second->setVector("viewPos",glm::vec4(camera.Position, 1.0f));
+
+            sceneModel.second->setVector3("dirLight.direction", -lightPos);
+
+            sceneModel.second->setVector3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+            sceneModel.second->setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+            sceneModel.second->setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));
+
+            sceneModel.first.Draw((gl3::shader &) sceneModel.second);
         }
     }
 
@@ -146,13 +156,17 @@ namespace Graphics{
         Scene::directionalLightPositions.push_back(directionalLightPosition);
     }
 
-    [[maybe_unused]] const std::pair<Model, gl3::shader> &Scene::getSceneModelAtIndex(int index) const {
+    [[maybe_unused]] const std::pair<Model, const gl3::shader *> &Scene::getSceneModelAtIndex(int index) const {
         return sceneModels[index];
     }
 
-    [[maybe_unused]] void Scene::AddSceneModels(const Model& model, const std::filesystem::path &vertexShaderAsset, const std::filesystem::path &fragmentShaderAsset) {
-        pair<Model, gl3::shader> sceneModel(model, gl3::shader(vertexShaderAsset, fragmentShaderAsset));
+    [[maybe_unused]] void Scene::AddSceneModels(const Model& model, const gl3::shader* shader) {
+        pair<Model, const gl3::shader *> sceneModel(model, shader);
         Scene::sceneModels.push_back(sceneModel);
+    }
+
+    Camera *Scene::getCamera() {
+        return &camera;
     }
 }
 

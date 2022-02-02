@@ -1,4 +1,4 @@
-#include <iostream>
+
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -7,7 +7,7 @@
 #include "../GraphicsEngine/camera.h"
 #include "../GraphicsEngine/Model.h"
 #include "../GraphicsEngine/Scene.h"
-
+#include <iostream>
 
 double deltaTime;
 
@@ -16,7 +16,7 @@ const float W_HEIGHT = 1080.0f;
 const char* W_TITLE = "GameLab III";
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera *camera;
 float lastX = W_WIDTH / 2.0f;
 float lastY = W_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -43,7 +43,7 @@ void projectionTransform(gl3::shader* shaderProgram);//unsigned int shaderProgra
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+    camera->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
@@ -62,7 +62,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 
@@ -80,26 +80,27 @@ void processUserInput(GLFWwindow *window){
 
     // user input
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera->ProcessKeyboard(RIGHT, deltaTime);
+        //std::cout<<"Pressed D" + to_string(deltaTime) <<endl;
         //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation -= rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera->ProcessKeyboard(LEFT, deltaTime);
         //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation += rotStep * deltaTime;
     }
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera->ProcessKeyboard(FORWARD, deltaTime);
         /*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
         xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*/
         //cameraPos += cameraSpeed * cameraFront;
     }
 
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera->ProcessKeyboard(BACKWARD, deltaTime);
         //cameraPos -= cameraSpeed * cameraFront;
         /*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
         xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*/
@@ -135,7 +136,7 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    //glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     glfwSetScrollCallback(window, scroll_callback);
 
@@ -211,7 +212,11 @@ int main() {
 
     Graphics::Scene scene = Graphics::Scene();
 
-    scene.AddSceneModels(model1, "shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+    camera = scene.getCamera();
+
+    gl3::shader shader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+
+    scene.AddSceneModels(model1, &shader);
 
 
     glEnable(GL_DEPTH_TEST);

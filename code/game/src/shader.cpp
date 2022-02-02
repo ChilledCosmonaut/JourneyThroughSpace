@@ -90,6 +90,7 @@ namespace gl3{
     shader::~shader() {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+        glDeleteShader(shaderProgram);
     }
 
     void shader::setBool(const std::string &name, bool value) const {
