@@ -71,7 +71,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void processUserInput(GLFWwindow *window){
+void processUserInput(GLFWwindow* window){
 
     const float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
 
