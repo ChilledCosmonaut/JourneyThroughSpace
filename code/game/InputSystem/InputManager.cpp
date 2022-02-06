@@ -31,6 +31,8 @@ namespace input{
     void InputManager::StartListening(GLFWwindow *window) {
         glfwSetCursorPosCallback(window, CallMouseMovement);
         glfwSetScrollCallback(window, CallScrollMovement);
+        glfwSetKeyCallback(window, CallKeyMovement);
+        glfwSetMouseButtonCallback(window, CallMouseButtonMovement);
     }
 
     void InputManager::CallKeyMovement(GLFWwindow *window, int key, int scancode, int action, int mods) {
