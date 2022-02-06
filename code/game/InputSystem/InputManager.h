@@ -10,9 +10,10 @@ namespace input{
         static void StartListening(GLFWwindow* window);
         static void StopListening(GLFWwindow* window);
 
-        static void AddMouseCallback();
-        static void AddScrollCallback();
-        static void AddKeyboardCallback();
+        static void AddMouseCallback(std::function<void (GLFWwindow*, double, double)> mouseMoveCallback);
+        static void AddScrollCallback(std::function<void (GLFWwindow*, double, double)> scrollCallback);
+        static void AddKeyboardCallback(std::function<void (GLFWwindow*, int, int, int, int)> keyInputCallback);
+        static void AddKeyboardCallback(std::function<void (GLFWwindow*, int, int, int)> mouseButtonCallback);
 
     private:
         static std::vector<std::function<void (GLFWwindow*, double, double)>> mouseMoveEvents;

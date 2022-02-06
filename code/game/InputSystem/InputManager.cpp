@@ -4,15 +4,19 @@
 
 namespace input{
 
-     void InputManager::AddMouseCallback() {
+     void InputManager::AddMouseCallback(std::function<void (GLFWwindow*, double, double)> mouseMoveCallback) {
 
     }
 
-    void InputManager::AddScrollCallback() {
+    void InputManager::AddScrollCallback(std::function<void (GLFWwindow*, double, double)> scrollCallback) {
 
     }
 
-    void InputManager::AddKeyboardCallback() {
+    void InputManager::AddKeyboardCallback(std::function<void (GLFWwindow*, int, int, int, int)> keyInputCallback) {
+
+    }
+
+    void InputManager::AddKeyboardCallback(std::function<void(GLFWwindow *, int, int, int)> mouseButtonCallback) {
 
     }
 
