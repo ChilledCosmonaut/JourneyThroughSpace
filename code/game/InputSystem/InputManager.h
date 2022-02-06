@@ -16,9 +16,10 @@ namespace input{
     private:
         static std::vector<std::function<void (GLFWwindow*, double, double)>> mouseMoveEvents;
         static std::vector<std::function<void (GLFWwindow*, double, double)>> scrollMoveEvent;
-        static std::vector<std::function<void (GLFWwindow*, int, int, int, int)>> keyPressEvent;
+        static std::vector<std::function<void (GLFWwindow*, int, int, int, int)>> keyInputEvent;
 
-        void CallMouseMovement(GLFWwindow* window, double xPosIn, double yPosIn);
-        void CallScrollMovement(GLFWwindow* window, double xOffset, double yOffset);
+        static void CallMouseMovement(GLFWwindow* window, double xPosIn, double yPosIn);
+        static void CallScrollMovement(GLFWwindow* window, double xOffset, double yOffset);
+        static void CallKeyMovement(GLFWwindow* window, int key, int scancode, int action, int mods);
     };
 }
