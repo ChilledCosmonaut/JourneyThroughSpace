@@ -25,30 +25,45 @@ namespace input {
         functionVector.erase(std::next(functionVector.begin(), functionAtIndex));
     }
 
-    void InputManager::RemoveScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
+    [[maybe_unused]] void
+    InputManager::AddMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
+        AddFunctionToVector(mouseMoveCallback, mouseMoveEvents);
+    }
 
+    [[maybe_unused]] void
+    InputManager::RemoveMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
+        RemoveFunctionToVector(mouseMoveCallback, mouseMoveEvents);
+    }
+
+    [[maybe_unused]] void
+    InputManager::AddScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
+        AddFunctionToVector(scrollCallback, scrollMoveEvent);
+    }
+
+    [[maybe_unused]] void
+    InputManager::RemoveScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
+        RemoveFunctionToVector(scrollCallback, scrollMoveEvent);
     }
 
     [[maybe_unused]] void
     InputManager::AddKeyboardCallback(const std::function<void(GLFWwindow *, int, int, int, int)> &keyInputCallback) {
-        if (findFunctionInVector(keyInputCallback, keyInputEvent) == NOT_FOUND)
-            keyInputEvent.push_back(keyInputCallback);
+        AddFunctionToVector(keyInputCallback, keyInputEvent);
     }
 
-    void InputManager::RemoveKeyboardCallback(
+    [[maybe_unused]] void InputManager::RemoveKeyboardCallback(
             const std::function<void(GLFWwindow *, int, int, int, int)> &keyInputCallback) {
-
+        RemoveFunctionToVector(keyInputCallback, keyInputEvent);
     }
 
     [[maybe_unused]] void
     InputManager::AddMouseButtonCallback(const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
-        if (findFunctionInVector(mouseButtonCallback, mouseButtonEvent) == NOT_FOUND)
-            mouseButtonEvent.push_back(mouseButtonCallback);
+        AddFunctionToVector(mouseButtonCallback, mouseButtonEvent);
     }
 
-    void
-    InputManager::RemoveMouseButtonCallback(const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
-
+    [[maybe_unused]] void
+    InputManager::RemoveMouseButtonCallback(
+            const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
+        RemoveFunctionToVector(mouseButtonCallback, mouseButtonEvent);
     }
 
     void InputManager::CallMouseMovement(GLFWwindow *window, double xPosIn, double yPosIn) {
