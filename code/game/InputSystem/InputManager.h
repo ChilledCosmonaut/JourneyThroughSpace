@@ -8,6 +8,7 @@ namespace input{
     class InputManager {
     public:
         static void StartListening(GLFWwindow* window);
+        static void StopListening(GLFWwindow* window);
 
         static void AddMouseCallback();
         static void AddScrollCallback();

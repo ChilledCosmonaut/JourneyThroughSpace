@@ -46,4 +46,11 @@ namespace input{
             mouseEvent(window, button, action, mods);
         }
     }
+
+    void InputManager::StopListening(GLFWwindow *window) {
+        glfwSetCursorPosCallback(window, nullptr);
+        glfwSetScrollCallback(window, nullptr);
+        glfwSetKeyCallback(window, nullptr);
+        glfwSetMouseButtonCallback(window, nullptr);
+    }
 }
