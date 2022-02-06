@@ -1,33 +1,46 @@
+#include "InputManager.h"
+#define NOT_FOUND -1
 
-   #include "InputManager.h"
+namespace input {
 
-
-namespace input{
-
-     void InputManager::AddMouseCallback(std::function<void (GLFWwindow*, double, double)> mouseMoveCallback) {
-
+    template<typename function>
+    int findFunctionInVector(function targetFunction, std::vector<function> functionVector) {
+        auto res = find(functionVector.begin(), functionVector.end(), targetFunction);
+        if (res != functionVector.end())
+            return res - functionVector.begin();
+        return -1;
     }
 
-    void InputManager::AddScrollCallback(std::function<void (GLFWwindow*, double, double)> scrollCallback) {
-
+    void InputManager::AddMouseCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
+        if (findFunctionInVector(mouseMoveCallback, mouseMoveEvents) == NOT_FOUND)
+            mouseMoveEvents.push_back(mouseMoveCallback);
     }
 
-    void InputManager::AddKeyboardCallback(std::function<void (GLFWwindow*, int, int, int, int)> keyInputCallback) {
-
+    void InputManager::AddScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
+        if (findFunctionInVector(scrollCallback, scrollMoveEvent) == NOT_FOUND)
+            scrollMoveEvent.push_back(scrollCallback);
     }
 
-    void InputManager::AddKeyboardCallback(std::function<void(GLFWwindow *, int, int, int)> mouseButtonCallback) {
+    void
+    InputManager::AddKeyboardCallback(const std::function<void(GLFWwindow *, int, int, int, int)> &keyInputCallback) {
+        if (findFunctionInVector(keyInputCallback, keyInputEvent) == NOT_FOUND)
+            keyInputEvent.push_back(keyInputCallback);
+    }
 
+    void
+    InputManager::AddKeyboardCallback(const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
+        if (findFunctionInVector(mouseButtonCallback, mouseButtonEvent) == NOT_FOUND)
+            mouseButtonEvent.push_back(mouseButtonCallback);
     }
 
     void InputManager::CallMouseMovement(GLFWwindow *window, double xPosIn, double yPosIn) {
-        for (auto & mouseEvent :mouseMoveEvents) {
-                mouseEvent(window, xPosIn, yPosIn);
+        for (auto &mouseEvent: mouseMoveEvents) {
+            mouseEvent(window, xPosIn, yPosIn);
         }
     }
 
     void InputManager::CallScrollMovement(GLFWwindow *window, double xOffset, double yOffset) {
-        for (auto & scrollEvent :scrollMoveEvent) {
+        for (auto &scrollEvent: scrollMoveEvent) {
             scrollEvent(window, xOffset, yOffset);
         }
     }
@@ -40,13 +53,13 @@ namespace input{
     }
 
     void InputManager::CallKeyMovement(GLFWwindow *window, int key, int scancode, int action, int mods) {
-        for (auto & keyEvent :keyInputEvent) {
+        for (auto &keyEvent: keyInputEvent) {
             keyEvent(window, key, scancode, action, mods);
         }
     }
 
     void InputManager::CallMouseButtonMovement(GLFWwindow *window, int button, int action, int mods) {
-        for (auto & mouseEvent :mouseButtonEvent) {
+        for (auto &mouseEvent: mouseButtonEvent) {
             mouseEvent(window, button, action, mods);
         }
     }
