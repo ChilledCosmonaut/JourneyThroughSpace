@@ -38,4 +38,10 @@ namespace input{
             keyEvent(window, key, scancode, action, mods);
         }
     }
+
+    void InputManager::CallMouseButtonMovement(GLFWwindow *window, int button, int action, int mods) {
+        for (auto & mouseEvent :mouseButtonEvent) {
+            mouseEvent(window, button, action, mods);
+        }
+    }
 }
