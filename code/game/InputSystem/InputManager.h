@@ -7,16 +7,16 @@
 namespace input{
     class InputManager {
     public:
-        void StartListening(GLFWwindow* window);
+        static void StartListening(GLFWwindow* window);
 
-        void AddMouseCallback();
-        void AddScrollCallback();
-        void AddKeyboardCallback();
+        static void AddMouseCallback();
+        static void AddScrollCallback();
+        static void AddKeyboardCallback();
 
     private:
-        std::vector<std::function<void (GLFWwindow*, double, double)>> mouseMovement;
-        std::vector<std::function<void (GLFWwindow*, double, double)>> scrollMovement;
-        std::vector<std::function<void (GLFWwindow*)>> keyboardInput;
+        static std::vector<std::function<void (GLFWwindow*, double, double)>> mouseMoveEvents;
+        static std::vector<std::function<void (GLFWwindow*, double, double)>> scrollMoveEvent;
+        static std::vector<std::function<void (GLFWwindow*, int, int, int, int)>> keyPressEvent;
 
         void CallMouseMovement(GLFWwindow* window, double xPosIn, double yPosIn);
         void CallScrollMovement(GLFWwindow* window, double xOffset, double yOffset);
