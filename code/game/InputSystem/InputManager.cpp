@@ -1,4 +1,5 @@
 #include "InputManager.h"
+
 #define NOT_FOUND -1
 
 namespace input {
@@ -11,18 +12,17 @@ namespace input {
         return -1;
     }
 
-    [[maybe_unused]] void InputManager::AddMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
-        if (findFunctionInVector(mouseMoveCallback, mouseMoveEvents) == NOT_FOUND)
-            mouseMoveEvents.push_back(mouseMoveCallback);
+    template<typename function>
+    void AddFunctionToVector(function targetFunction, std::vector<function> functionVector) {
+        if (findFunctionInVector(targetFunction, functionVector) == NOT_FOUND)
+            functionVector.push_back(targetFunction);
     }
 
-    void InputManager::RemoveMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
-
-    }
-
-    [[maybe_unused]] void InputManager::AddScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
-        if (findFunctionInVector(scrollCallback, scrollMoveEvent) == NOT_FOUND)
-            scrollMoveEvent.push_back(scrollCallback);
+    template<typename function>
+    void RemoveFunctionToVector(function targetFunction, std::vector<function> functionVector) {
+        int functionAtIndex = findFunctionInVector(targetFunction, functionVector);
+        if (functionAtIndex == NOT_FOUND) return;
+        functionVector.erase(std::next(functionVector.begin(), functionAtIndex));
     }
 
     void InputManager::RemoveScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
