@@ -25,6 +25,20 @@ namespace input {
         functionVector.erase(std::next(functionVector.begin(), functionAtIndex));
     }
 
+    [[maybe_unused]] void InputManager::StartListening(GLFWwindow *window) {
+        glfwSetCursorPosCallback(window, CallMouseMovement);
+        glfwSetScrollCallback(window, CallScrollMovement);
+        glfwSetKeyCallback(window, CallKeyMovement);
+        glfwSetMouseButtonCallback(window, CallMouseButtonMovement);
+    }
+
+    [[maybe_unused]] void InputManager::StopListening(GLFWwindow *window) {
+        glfwSetCursorPosCallback(window, nullptr);
+        glfwSetScrollCallback(window, nullptr);
+        glfwSetKeyCallback(window, nullptr);
+        glfwSetMouseButtonCallback(window, nullptr);
+    }
+
     [[maybe_unused]] void
     InputManager::AddMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
         AddFunctionToVector(mouseMoveCallback, mouseMoveEvents);
@@ -78,13 +92,6 @@ namespace input {
         }
     }
 
-    [[maybe_unused]] void InputManager::StartListening(GLFWwindow *window) {
-        glfwSetCursorPosCallback(window, CallMouseMovement);
-        glfwSetScrollCallback(window, CallScrollMovement);
-        glfwSetKeyCallback(window, CallKeyMovement);
-        glfwSetMouseButtonCallback(window, CallMouseButtonMovement);
-    }
-
     void InputManager::CallKeyMovement(GLFWwindow *window, int key, int scancode, int action, int mods) {
         for (auto &keyEvent: keyInputEvent) {
             keyEvent(window, key, scancode, action, mods);
@@ -95,12 +102,5 @@ namespace input {
         for (auto &mouseEvent: mouseButtonEvent) {
             mouseEvent(window, button, action, mods);
         }
-    }
-
-    [[maybe_unused]] void InputManager::StopListening(GLFWwindow *window) {
-        glfwSetCursorPosCallback(window, nullptr);
-        glfwSetScrollCallback(window, nullptr);
-        glfwSetKeyCallback(window, nullptr);
-        glfwSetMouseButtonCallback(window, nullptr);
     }
 }
