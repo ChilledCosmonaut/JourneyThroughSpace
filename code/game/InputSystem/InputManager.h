@@ -5,15 +5,19 @@
 #include <GLFW/glfw3.h>
 
 namespace input{
-    class InputManager {
+    class [[maybe_unused]] InputManager {
     public:
-        static void StartListening(GLFWwindow* window);
-        static void StopListening(GLFWwindow* window);
+        [[maybe_unused]] static void StartListening(GLFWwindow* window);
 
-        static void AddMouseCallback(const std::function<void (GLFWwindow*, double, double)>& mouseMoveCallback);
-        static void AddScrollCallback(const std::function<void (GLFWwindow*, double, double)>& scrollCallback);
-        static void AddKeyboardCallback(const std::function<void (GLFWwindow*, int, int, int, int)>& keyInputCallback);
-        static void AddKeyboardCallback(const std::function<void (GLFWwindow*, int, int, int)>& mouseButtonCallback);
+        [[maybe_unused]] static void StopListening(GLFWwindow* window);
+
+        [[maybe_unused]] static void AddMouseCallback(const std::function<void (GLFWwindow*, double, double)>& mouseMoveCallback);
+
+        [[maybe_unused]] static void AddScrollCallback(const std::function<void (GLFWwindow*, double, double)>& scrollCallback);
+
+        [[maybe_unused]] static void AddKeyboardCallback(const std::function<void (GLFWwindow*, int, int, int, int)>& keyInputCallback);
+
+        [[maybe_unused]] static void AddKeyboardCallback(const std::function<void (GLFWwindow*, int, int, int)>& mouseButtonCallback);
 
     private:
         static std::vector<std::function<void (GLFWwindow*, double, double)>> mouseMoveEvents;
