@@ -4,22 +4,28 @@
 
 namespace input {
 
-    template<typename function>
-    int findFunctionInVector(function targetFunction, std::vector<function> functionVector) {
+    template<typename inputScript, typename function>
+    struct inputFunction{
+        inputScript* memberClass;
+        std::function<function> memberFunction;
+    };
+
+    template<typename inputFunction>
+    int findFunctionInVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
         auto res = find(functionVector.begin(), functionVector.end(), targetFunction);
         if (res != functionVector.end())
             return res - functionVector.begin();
         return -1;
     }
 
-    template<typename function>
-    void AddFunctionToVector(function targetFunction, std::vector<function> functionVector) {
+    template<typename inputFunction>
+    void AddFunctionToVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
         if (findFunctionInVector(targetFunction, functionVector) == NOT_FOUND)
             functionVector.push_back(targetFunction);
     }
 
-    template<typename function>
-    void RemoveFunctionToVector(function targetFunction, std::vector<function> functionVector) {
+    template<typename inputFunction>
+    void RemoveFunctionToVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
         int functionAtIndex = findFunctionInVector(targetFunction, functionVector);
         if (functionAtIndex == NOT_FOUND) return;
         functionVector.erase(std::next(functionVector.begin(), functionAtIndex));
