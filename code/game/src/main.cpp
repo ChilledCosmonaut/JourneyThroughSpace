@@ -1,5 +1,3 @@
-
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.h"
@@ -7,13 +5,14 @@
 #include "../GraphicsEngine/camera.h"
 #include "../GraphicsEngine/Model.h"
 #include "../GraphicsEngine/Scene.h"
+#include "../InputSystem/InputManager.h"
 #include <iostream>
 
 double deltaTime;
 
 const float W_WIDTH = 1920.0f;
 const float W_HEIGHT = 1080.0f;
-const char* W_TITLE = "GameLab III";
+const char *W_TITLE = "GameLab III";
 
 // camera
 Camera *camera;
@@ -26,31 +25,29 @@ float rotStep = 90.0f;
 float xTranslate = 0.0f, yTranslate = 0.0f;
 float transStep = 20.0f;
 
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-glm::vec3 lightPos    = glm::vec3(0.0f, -0.5f, 1.0f);
-glm::vec3 shipPos1    = glm::vec3(5.0f, -95.0f, -55.0f);
-glm::vec3 shipPos2    = glm::vec3(20.0f, -65.0f, -50.0f);
-glm::vec3 shipPos3    = glm::vec3(40.0f, -90.0f, -60.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 lightPos = glm::vec3(0.0f, -0.5f, 1.0f);
+glm::vec3 shipPos1 = glm::vec3(5.0f, -95.0f, -55.0f);
+glm::vec3 shipPos2 = glm::vec3(20.0f, -65.0f, -50.0f);
+glm::vec3 shipPos3 = glm::vec3(40.0f, -90.0f, -60.0f);
 
 float yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
 
 
-void modelTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
-void viewTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
-void projectionTransform(gl3::shader* shaderProgram);//unsigned int shaderProgram);
+void modelTransform(gl3::shader *shaderProgram);//unsigned int shaderProgram);
+void viewTransform(gl3::shader *shaderProgram);//unsigned int shaderProgram);
+void projectionTransform(gl3::shader *shaderProgram);//unsigned int shaderProgram);
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     camera->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
-    if (firstMouse)
-    {
+    if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -66,54 +63,51 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn){
 }
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processUserInput(GLFWwindow* window){
+void processUserInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 
     const float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
 
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     // user input
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+    /*if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera->ProcessKeyboard(RIGHT, deltaTime);
         //std::cout<<"Pressed D" + to_string(deltaTime) <<endl;
         //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation -= rotStep * deltaTime;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera->ProcessKeyboard(LEFT, deltaTime);
         //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation += rotStep * deltaTime;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera->ProcessKeyboard(FORWARD, deltaTime);
-        /*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*/
+        *//*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*//*
         //cameraPos += cameraSpeed * cameraFront;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         camera->ProcessKeyboard(BACKWARD, deltaTime);
         //cameraPos -= cameraSpeed * cameraFront;
-        /*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*/
+        *//*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*//*
     }
 
-    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         shipPos1.z += transStep * deltaTime;
         shipPos2.z += transStep * deltaTime;
         shipPos3.z += transStep * deltaTime;
-    }
+    }*/
 }
-
-
 
 int main() {
     glfwInit();
@@ -123,9 +117,8 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(W_WIDTH, W_HEIGHT, W_TITLE, nullptr, nullptr);
-    if (window == nullptr)
-    {
+    GLFWwindow *window = glfwCreateWindow(W_WIDTH, W_HEIGHT, W_TITLE, nullptr, nullptr);
+    if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -139,9 +132,11 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
 
     glfwSetScrollCallback(window, scroll_callback);
+    //input::InputManager::AddScrollCallback(scroll_callback);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    input::InputManager::AddKeyboardCallback(processUserInput);
+
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -153,48 +148,49 @@ int main() {
     Model model2 = Model("../../assets/SpaceShip2.obj");
     Model model3 = Model("../../assets/SpaceShip3.obj");
 
+
     float vertices[] = {
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
 
-            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
     };
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
@@ -207,7 +203,7 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // note that we update the lamp's position attribute's stride to reflect the updated buffer data
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
     Graphics::Scene scene = Graphics::Scene();
@@ -218,18 +214,17 @@ int main() {
 
     scene.AddSceneModels(model1, &shader);
 
+    //input::InputManager::StartListening(window);
+
 
     glEnable(GL_DEPTH_TEST);
 
-    while(!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.Render();
         // ... draw rest of the scene
-
-        processUserInput(window);
 
         // don't forget to enable shader before setting uniforms
         /*litShader.use();
@@ -312,10 +307,10 @@ int main() {
     return 0;
 }
 
-void modelTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
+void modelTransform(gl3::shader *shaderProgram) {//unsigned int shaderProgram){
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     //model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
     //model = glm::scale(model, glm::vec3(0.25f, 0.25f, 0.25f));
 
@@ -325,9 +320,9 @@ void modelTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
     glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));*/
 }
 
-void viewTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
+void viewTransform(gl3::shader *shaderProgram) {//unsigned int shaderProgram){
 
-    glm::mat4 view  = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     /*view = glm::lookAt(glm::vec3(0.0f,0.0f,25.0f),
                        glm::vec3(0.0f,0.0f,0.0f),
@@ -335,15 +330,15 @@ void viewTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
                        glm::vec3(0.0f,0.0f,-1.0f),
                        glm::vec3(0.0f,1.0f,0.0f));*/
 
-    shaderProgram->setMatrix("view",view);
+    shaderProgram->setMatrix("view", view);
 
     /*int viewLocation = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));*/
 }
 
-void projectionTransform(gl3::shader* shaderProgram){//unsigned int shaderProgram){
+void projectionTransform(gl3::shader *shaderProgram) {//unsigned int shaderProgram){
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W_WIDTH/W_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W_WIDTH / W_HEIGHT, 0.1f, 100.0f);
 
     shaderProgram->setMatrix("projection", projection);
 
