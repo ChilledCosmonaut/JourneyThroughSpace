@@ -3,13 +3,6 @@
 #define NOT_FOUND -1
 
 namespace input {
-
-    template<typename inputScript, typename function>
-    struct inputFunction{
-        inputScript* memberClass;
-        std::function<function> memberFunction;
-    };
-
     template<typename inputFunction>
     int findFunctionInVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
         auto res = find(functionVector.begin(), functionVector.end(), targetFunction);
@@ -20,16 +13,16 @@ namespace input {
 
     template<typename inputFunction>
     void AddFunctionToVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
-        if (findFunctionInVector(targetFunction, functionVector) == NOT_FOUND)
+        //if (findFunctionInVector(targetFunction, functionVector) == NOT_FOUND)
             functionVector.push_back(targetFunction);
     }
 
-    template<typename inputFunction>
+    /*template<typename inputFunction>
     void RemoveFunctionToVector(inputFunction targetFunction, std::vector<inputFunction> functionVector) {
         int functionAtIndex = findFunctionInVector(targetFunction, functionVector);
         if (functionAtIndex == NOT_FOUND) return;
         functionVector.erase(std::next(functionVector.begin(), functionAtIndex));
-    }
+    }*/
 
     [[maybe_unused]] void InputManager::StartListening(GLFWwindow *window) {
         glfwSetCursorPosCallback(window, CallMouseMovement);
@@ -46,45 +39,45 @@ namespace input {
     }
 
     [[maybe_unused]] void
-    InputManager::AddMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
+    InputManager::AddMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)>& mouseMoveCallback) {
         AddFunctionToVector(mouseMoveCallback, mouseMoveEvents);
     }
 
-    [[maybe_unused]] void
+    /*[[maybe_unused]] void
     InputManager::RemoveMouseMoveCallback(const std::function<void(GLFWwindow *, double, double)> &mouseMoveCallback) {
-        RemoveFunctionToVector(mouseMoveCallback, mouseMoveEvents);
-    }
+        //RemoveFunctionToVector(mouseMoveCallback, mouseMoveEvents);
+    }*/
 
     [[maybe_unused]] void
     InputManager::AddScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
-        AddFunctionToVector(scrollCallback, scrollMoveEvent);
+        //AddFunctionToVector(scrollCallback, scrollMoveEvent);
     }
 
-    [[maybe_unused]] void
+    /*[[maybe_unused]] void
     InputManager::RemoveScrollCallback(const std::function<void(GLFWwindow *, double, double)> &scrollCallback) {
-        RemoveFunctionToVector(scrollCallback, scrollMoveEvent);
-    }
+        //RemoveFunctionToVector(scrollCallback, scrollMoveEvent);
+    }*/
 
     [[maybe_unused]] void
     InputManager::AddKeyboardCallback(const std::function<void(GLFWwindow *, int, int, int, int)> &keyInputCallback) {
-        AddFunctionToVector(keyInputCallback, keyInputEvent);
+        //AddFunctionToVector(keyInputCallback, keyInputEvent);
     }
 
-    [[maybe_unused]] void InputManager::RemoveKeyboardCallback(
+    /*[[maybe_unused]] void InputManager::RemoveKeyboardCallback(
             const std::function<void(GLFWwindow *, int, int, int, int)> &keyInputCallback) {
-        RemoveFunctionToVector(keyInputCallback, keyInputEvent);
-    }
+        //RemoveFunctionToVector(keyInputCallback, keyInputEvent);
+    }*/
 
     [[maybe_unused]] void
     InputManager::AddMouseButtonCallback(const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
-        AddFunctionToVector(mouseButtonCallback, mouseButtonEvent);
+        //AddFunctionToVector(mouseButtonCallback, mouseButtonEvent);
     }
 
-    [[maybe_unused]] void
+    /*[[maybe_unused]] void
     InputManager::RemoveMouseButtonCallback(
             const std::function<void(GLFWwindow *, int, int, int)> &mouseButtonCallback) {
-        RemoveFunctionToVector(mouseButtonCallback, mouseButtonEvent);
-    }
+        //RemoveFunctionToVector(mouseButtonCallback, mouseButtonEvent);
+    }*/
 
     void InputManager::CallMouseMovement(GLFWwindow *window, double xPosIn, double yPosIn) {
         for (auto &mouseEvent: mouseMoveEvents) {
