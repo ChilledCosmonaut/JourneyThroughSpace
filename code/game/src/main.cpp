@@ -127,14 +127,17 @@ int main() {
 
     glfwMakeContextCurrent(window);
 
+    input::InputManager inputCallback = input::InputManager();
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glfwSetCursorPosCallback(window, mouse_callback);
+    //glfwSetCursorPosCallback(window, mouse_callback);
+    inputCallback.AddMouseMoveCallback(mouse_callback);
 
-    glfwSetScrollCallback(window, scroll_callback);
-    //input::InputManager::AddScrollCallback(scroll_callback);
+    //glfwSetScrollCallback(window, scroll_callback);
+    inputCallback.AddScrollCallback(scroll_callback);
 
-    input::InputManager::AddKeyboardCallback(processUserInput);
+    inputCallback.AddKeyboardCallback(processUserInput);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -214,7 +217,7 @@ int main() {
 
     scene.AddSceneModels(model1, &shader);
 
-    //input::InputManager::StartListening(window);
+    inputCallback.StartListening(window);
 
 
     glEnable(GL_DEPTH_TEST);
