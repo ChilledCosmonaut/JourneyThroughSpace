@@ -215,7 +215,15 @@ int main() {
 
     gl3::shader shader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
-    scene.AddSceneModels(model1, &shader);
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+    model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+    model = glm::translate(model, shipPos1);
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+    litShader.setMatrix("model", model);
+    model1.Draw(litShader);
+
+    scene.AddSceneModels(model1, &shader, &model);
 
     inputCallback.StartListening(window);
 
@@ -242,8 +250,6 @@ int main() {
 
 
 
-        /**/
-
         // render the loaded model
         /*glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
@@ -252,13 +258,7 @@ int main() {
         litShader.setMatrix("model", model);
         model.Draw(litShader);*/
 
-        /*model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
-        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
-        model = glm::translate(model, shipPos1);
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-        litShader.setMatrix("model", model);
-        model1.Draw(litShader);
+        /*
 
         model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
