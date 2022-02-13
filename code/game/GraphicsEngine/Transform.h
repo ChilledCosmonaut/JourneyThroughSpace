@@ -9,17 +9,14 @@ namespace Graphics {
     public:
         Transform();
 
-        void Rotate(glm::vec3);
-
-        void Translate(glm::vec3);
-
-        void Scale(glm::vec3);
+        void Rotate(glm::vec3 targetRotation);
+        void Translate(glm::vec3 targetTranslation);
+        void Scale(glm::vec3 targetScale);
 
         glm::mat4 GetModelMatrix();
 
     private:
-        glm::quat quaternion{};
-        glm::mat4 rotation;
+        glm::quat rotation;
         glm::vec3 translation;
         glm::vec3 scale;
     };
