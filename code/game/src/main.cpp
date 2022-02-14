@@ -7,6 +7,7 @@
 #include "../GraphicsEngine/Scene.h"
 #include "../InputSystem/InputManager.h"
 #include <iostream>
+#include "../GraphicsEngine/Transform.h"
 
 double deltaTime;
 
@@ -32,6 +33,10 @@ glm::vec3 lightPos = glm::vec3(0.0f, -0.5f, 1.0f);
 glm::vec3 shipPos1 = glm::vec3(5.0f, -95.0f, -55.0f);
 glm::vec3 shipPos2 = glm::vec3(20.0f, -65.0f, -50.0f);
 glm::vec3 shipPos3 = glm::vec3(40.0f, -90.0f, -60.0f);
+
+glm::vec3 rota = glm::vec3(0,0,0);
+
+auto modelMatrixTransform = Graphics::Transform(rota);
 
 float yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
 
@@ -74,39 +79,46 @@ void processUserInput(GLFWwindow *window, int key, int scancode, int action, int
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    if (key == GLFW_KEY_UP){
+        rota.x += 10 * deltaTime;
+        modelMatrixTransform.Rotate(rota);
+        std::cout << rota.x << std::endl;
+    }
+
+
     // user input
-    /*if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (key == GLFW_KEY_D) {
         camera->ProcessKeyboard(RIGHT, deltaTime);
         //std::cout<<"Pressed D" + to_string(deltaTime) <<endl;
         //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation -= rotStep * deltaTime;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (key == GLFW_KEY_A) {
         camera->ProcessKeyboard(LEFT, deltaTime);
         //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         //zRotation += rotStep * deltaTime;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (key == GLFW_KEY_W) {
         camera->ProcessKeyboard(FORWARD, deltaTime);
-        *//*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;*//*
+        //*yTranslate += sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate += cos(glm::radians(zRotation)) * transStep * deltaTime;//*
         //cameraPos += cameraSpeed * cameraFront;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (key == GLFW_KEY_S) {
         camera->ProcessKeyboard(BACKWARD, deltaTime);
         //cameraPos -= cameraSpeed * cameraFront;
-        *//*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
-        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;*//*
+        //*yTranslate -= sin(glm::radians(zRotation)) * transStep * deltaTime;
+        xTranslate -= cos(glm::radians(zRotation)) * transStep * deltaTime;//*
     }
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        shipPos1.z += transStep * deltaTime;
+    if (key == GLFW_KEY_SPACE) {
+        /*shipPos1.z += transStep * deltaTime;
         shipPos2.z += transStep * deltaTime;
-        shipPos3.z += transStep * deltaTime;
-    }*/
+        shipPos3.z += transStep * deltaTime;*/
+    }
 }
 
 int main() {
@@ -146,7 +158,7 @@ int main() {
 
     gl3::shader litShader = gl3::shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
-    //Model model = Model("../../assets/TransportShip.fbx");
+    Model model4 = Model("../../assets/backpack.obj");
     Model model1 = Model("../../assets/SpaceShip4.obj");
     Model model2 = Model("../../assets/SpaceShip2.obj");
     Model model3 = Model("../../assets/SpaceShip3.obj");
@@ -221,9 +233,10 @@ int main() {
     model = glm::translate(model, shipPos1);
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     litShader.setMatrix("model", model);
-    model1.Draw(litShader);
 
     scene.AddSceneModels(model1, &shader, &model);
+
+    scene.AddSceneModels(model4, &shader, modelMatrixTransform.GetModelMatrix());
 
     inputCallback.StartListening(window);
 
@@ -235,65 +248,64 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.Render();
+
         // ... draw rest of the scene
 
         // don't forget to enable shader before setting uniforms
         /*litShader.use();
 
-        litShader.setVector("viewPos",glm::vec4(camera.Position, 1.0f));
+        litShader.setVector("viewPos",glm::vec4(camera->Position, 1.0f));
 
         litShader.setVector3("dirLight.direction", -lightPos);
 
         litShader.setVector3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
         litShader.setVector3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
-        litShader.setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));
+        litShader.setVector3("dirLight.specular", glm::vec3(0.7f, 0.7f, 0.7f));*/
 
 
 
-        // render the loaded model
-        /*glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(0,1.0f,1.0f));
-        model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        litShader.setMatrix("model", model);
-        model.Draw(litShader);*/
+        // render the loaded modelTransform
+        /*glm::mat4 modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::rotate(modelTransform, glm::radians(-90.0f), glm::vec3(0, 1.0f, 0.0f));
+        modelTransform = glm::translate(modelTransform, glm::vec3(5.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        modelTransform = glm::scale(modelTransform, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        litShader.setMatrix("modelTransform", modelTransform);
+        model4.Draw(litShader);*/
 
-        /*
-
-        model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
-        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
-        model = glm::translate(model, shipPos2);
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-        litShader.setMatrix("model", model);
+        /*modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::rotate(modelTransform, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        modelTransform = glm::rotate(modelTransform, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        modelTransform = glm::translate(modelTransform, shipPos2);
+        modelTransform = glm::scale(modelTransform, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("modelTransform", modelTransform);
         model2.Draw(litShader);
 
-        model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(180.0f),glm::vec3(0,1.0f,0));
-        model = glm::rotate(model, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
-        model = glm::translate(model, shipPos3);
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-        litShader.setMatrix("model", model);
-        model3.Draw(litShader);
+        modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::rotate(modelTransform, glm::radians(180.0f),glm::vec3(0,1.0f,0));
+        modelTransform = glm::rotate(modelTransform, glm::radians(-90.0f),glm::vec3(1.0f,0,0));
+        modelTransform = glm::translate(modelTransform, shipPos3);
+        modelTransform = glm::scale(modelTransform, glm::vec3(1.0f, 1.0f, 1.0f));
+        litShader.setMatrix("modelTransform", modelTransform);
+        model3.Draw(litShader);*/
 
         // also draw the lamp object
         /*lightShader.use();
         lightShader.setMatrix("projection", projection);
         lightShader.setMatrix("view", view);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-        lightShader.setMatrix("model", model);
+        modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::translate(modelTransform, lightPos);
+        modelTransform = glm::scale(modelTransform, glm::vec3(0.2f)); // a smaller cube
+        lightShader.setMatrix("modelTransform", modelTransform);*/
 
-        glBindVertexArray(lightCubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        /*glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
-        lightShader.setMatrix("projection", projection);
+        /*lightShader.setMatrix("projection", projection);
         lightShader.setMatrix("view", view);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
-        model = glm::scale(model, glm::vec3(0.4f)); // a smaller cube
-        lightShader.setMatrix("model", model);
+        modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::translate(modelTransform, glm::vec3(0.0f,0.0f,0.0f));
+        modelTransform = glm::scale(modelTransform, glm::vec3(0.4f)); // a smaller cube
+        lightShader.setMatrix("modelTransform", modelTransform);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);*/
